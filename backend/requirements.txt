@@ -4,3 +4,4 @@ python-dotenv>=0.21.0
 supabase>=2.0.0
 python-jose>=3.3.0
 passlib>=1.7.4
+python-dotenv
