@@ -12,5 +12,6 @@ __pycache__/
 
 read.md
 packages.txt
+tests.py
 .env
 env/
