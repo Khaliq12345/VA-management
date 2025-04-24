@@ -1,5 +1,6 @@
 from supabase import AsyncClient
 from datetime import datetime, timedelta, timezone
+from dateparser import parse
 
 
 async def get_scraped_users_from_supabase(
@@ -59,21 +60,14 @@ async def get_va_info(supabase: AsyncClient, va_id: int):
 async def save_interaction_supabase(
     supabase: AsyncClient, creator_ig_username: str, user_id: str, creator_username: str
 ):
-    # Update in scraped_user
-    update_response = (
-        await supabase.table("scraped_users")
-        .update({"last_action": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
-        .eq("user_id", user_id)
-        .execute()
-    )
-    # Insert in interaction_table
-    insert_response = (
-        await supabase.table("interaction_table")
-        .insert({
-            "creator_ig_username": creator_ig_username,
-            "user_id": user_id,
-            "creator_username": creator_username,
-            })
-        .execute()
-    )
+    # Run the function defined in postgres
+    await supabase.rpc(
+        "save_interaction_fn",
+        {
+            "creator_ig_username_input": creator_ig_username,
+            "user_id_input": user_id,
+            "creator_username_input": creator_username,
+            "last_action_date": parse("now").isoformat(),
+        },
+    ).execute()
     return True

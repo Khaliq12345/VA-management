@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from typing import List, Dict, Annotated
-from supabase import AsyncClient
-from backend.dependencies.supabase_depency import get_supabase_session, get_supabase_from_headers
+from backend.dependencies.supabase_depency import (
+    get_supabase_from_headers,
+)
 from backend.services.supabase_service import (
     get_scraped_users_from_supabase,
     get_va_info,
-    save_interaction_supabase
+    save_interaction_supabase,
 )
 from backend.services.airtable_service import (
     get_creator_info_from_airtable,
@@ -17,27 +18,28 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get("/get-scraped-users", response_model=List[Dict])
 async def get_users(
-    request: Request, 
+    session: Annotated[dict, Depends(get_supabase_from_headers)],
+    request: Request,
     response: Response,
     va_id: int,
     limit: int = 20,
     offset: int = 0,
 ):
-    supabase, new_access_token, new_refresh_token = await get_supabase_from_headers(request)
     # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
-    response.headers["access_token"] = new_access_token
-    response.headers["refresh_token"] = new_refresh_token
-    
+    response.headers["access_token"] = session["access_token"]
+    response.headers["refresh_token"] = session["refresh_token"]
+
     try:
         # Récupérer les utilisateurs scrapés depuis Supabase
         scraped_users = await get_scraped_users_from_supabase(
-            supabase=supabase, va_id=va_id, limit=limit, offset=offset
+            supabase=session["supabase"], va_id=va_id, limit=limit, offset=offset
         )
 
         # Récupérer les informations de l'API Airtable
-        table_id, base_id = await get_va_info(supabase, va_id)
+        table_id, base_id = await get_va_info(session["supabase"], va_id)
         (
             ig_usernames,
             creator_usernames,
@@ -71,28 +73,26 @@ async def get_users(
     except Exception as e:
         raise HTTPException(500, detail=str(e))
 
+
 @router.get("/save-interaction", response_model=Dict)
 async def save_interaction(
-    request: Request, 
+    session: Annotated[dict, Depends(get_supabase_from_headers)],
+    request: Request,
     response: Response,
     creator_ig_username: str,
     user_id: str,
-    creator_username: str
+    creator_username: str,
 ):
-    
-    supabase, new_access_token, new_refresh_token = await get_supabase_from_headers(request)
     # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
-    response.headers["access_token"] = new_access_token
-    response.headers["refresh_token"] = new_refresh_token
-    
+    response.headers["access_token"] = session["access_token"]
+    response.headers["refresh_token"] = session["refresh_token"]
+
     try:
         # Update and Insert in Supabase
-        result = await save_interaction_supabase(
-            supabase, creator_ig_username, user_id, creator_username
+        await save_interaction_supabase(
+            session["supabase"], creator_ig_username, user_id, creator_username
         )
-        return {'message' : 'Success !'}
+        return {"message": "Success !"}
 
     except Exception as e:
         raise HTTPException(500, detail=str(e))
-
-
