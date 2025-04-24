@@ -8,3 +8,9 @@ __pycache__/
 .DS_Store
 .env
 .env.dev
+
+
+read.md
+packages.txt
+.env
+env/
