@@ -17,14 +17,19 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-
 @router.get("/get-scraped-users", response_model=List[Dict])
 async def get_users(
-    supabase: Annotated[AsyncClient, Depends(get_supabase_session)],
+    request: Request, 
+    response: Response,
     va_id: int,
     limit: int = 20,
     offset: int = 0,
 ):
+    supabase, new_access_token, new_refresh_token = await get_supabase_from_headers(request)
+    # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
+    response.headers["access_token"] = new_access_token
+    response.headers["refresh_token"] = new_refresh_token
+    
     try:
         # Récupérer les utilisateurs scrapés depuis Supabase
         scraped_users = await get_scraped_users_from_supabase(
@@ -66,7 +71,7 @@ async def get_users(
     except Exception as e:
         raise HTTPException(500, detail=str(e))
 
-@router.get("/interacted-user", response_model=Dict)
+@router.get("/save-interaction", response_model=Dict)
 async def save_interaction(
     request: Request, 
     response: Response,
