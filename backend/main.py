@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.routes.users import router as users_router
+from backend.routes.auth import router as auth_router
 
 from backend.config import config
 
@@ -25,15 +26,15 @@ app.add_middleware(
 )
 
 # Routes
+app.include_router(auth_router, tags=["Authentication"])
 app.include_router(users_router, tags=["Scraped Users"])
-# app.include_router(auth_router)
 
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
         "__main__:app",
-        host="0.0.0.0",
+        host="127.0.0.1",
         port=8000,
         reload=True if config.APP_ENV == "development" else False,
     )

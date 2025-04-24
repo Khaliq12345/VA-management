@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from typing import List, Dict, Annotated
 from supabase import AsyncClient
-from backend.dependencies.supabase_depency import get_supabase_session
+from backend.dependencies.supabase_depency import get_supabase_session, get_supabase_from_headers
 from backend.services.supabase_service import (
     get_scraped_users_from_supabase,
     get_va_info,
+    save_interaction_supabase
 )
 from backend.services.airtable_service import (
     get_creator_info_from_airtable,
@@ -64,3 +65,29 @@ async def get_users(
 
     except Exception as e:
         raise HTTPException(500, detail=str(e))
+
+@router.get("/interacted-user", response_model=Dict)
+async def save_interaction(
+    request: Request, 
+    response: Response,
+    creator_ig_username: str,
+    user_id: str,
+    creator_username: str
+):
+    
+    supabase, new_access_token, new_refresh_token = await get_supabase_from_headers(request)
+    # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
+    response.headers["access_token"] = new_access_token
+    response.headers["refresh_token"] = new_refresh_token
+    
+    try:
+        # Update and Insert in Supabase
+        result = await save_interaction_supabase(
+            supabase, creator_ig_username, user_id, creator_username
+        )
+        return {'message' : 'Success !'}
+
+    except Exception as e:
+        raise HTTPException(500, detail=str(e))
+
+

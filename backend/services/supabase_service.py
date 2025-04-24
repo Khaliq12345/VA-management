@@ -54,3 +54,26 @@ async def get_va_info(supabase: AsyncClient, va_id: int):
     table_id = va_table_data.get("table_id")
     base_id = va_table_data.get("base_id")
     return table_id, base_id
+
+
+async def save_interaction_supabase(
+    supabase: AsyncClient, creator_ig_username: str, user_id: str, creator_username: str
+):
+    # Update in scraped_user
+    update_response = (
+        await supabase.table("scraped_users")
+        .update({"last_action": datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+        .eq("user_id", user_id)
+        .execute()
+    )
+    # Insert in interaction_table
+    insert_response = (
+        await supabase.table("interaction_table")
+        .insert({
+            "creator_ig_username": creator_ig_username,
+            "user_id": user_id,
+            "creator_username": creator_username,
+            })
+        .execute()
+    )
+    return True
