@@ -16,3 +16,6 @@ SIGNUP_API_KEY = os.getenv("SIGNUP_API_KEY")
 
 # --------APP-------------
 APP_ENV = cli_parser.args.env
+
+# --------Airtable-------------
+AIRTABLE_PERSONAL_ACCESS_TOKEN = os.getenv("AIRTABLE_PERSONAL_ACCESS_TOKEN")
