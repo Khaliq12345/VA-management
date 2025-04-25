@@ -31,4 +31,4 @@ async def get_creator_info_from_airtable(table_id, base_id, limit=20, offset=Non
         creators_usernames.append(fields.get("Creator Name"))
         instagram_usernames.append(fields.get("Instagram Username"))
 
-    return instagram_usernames, creators_usernames
+    return instagram_usernames, creators_usernames #, response.json().get("offset", "")
