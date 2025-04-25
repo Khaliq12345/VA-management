@@ -15,3 +15,6 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 # --------APP-------------
 APP_ENV = cli_parser.args.env
+
+# --------Airtable-------------
+AIRTABLE_PERSONAL_ACCESS_TOKEN = os.getenv("AIRTABLE_PERSONAL_ACCESS_TOKEN")
