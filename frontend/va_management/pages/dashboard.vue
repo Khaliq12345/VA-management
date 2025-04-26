@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar.vue';
 import DashboardContent from '../components/dashboard/DashboardContent.vue';
 
-
+// # Connected User
 const loggedInUser = ref({
   name: 'John Doe', // 
   loginTime: new Date(),
@@ -12,61 +12,63 @@ const loggedInUser = ref({
   shiftTimeTo: new Date(),
 });
 
+// # For Sidebar
 // const currentTime = ref(formatTime(new Date()));
 const isMobileSidebarOpen = ref(false);
 
+// # Creators List
 const  creators = ref([
   {
-    id: 1, name: 'Alicei', active: true, users:
+    id: 1, name: 'Alicei', strategy: 'F/U', ig_username: 'jruro', users:
       [
         { id: 1, name: 'Alicei Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'Alicei Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
         { id: 3, name: 'Alicei Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
       ]
   },
-  { id: 2, name: 'Bae', active: false, users: 
+  { id: 2, name: 'Bae', strategy: 'M-Comment', ig_username: 'jruro', users: 
     [
         { id: 1, name: 'Bae Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'Bae Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
         { id: 3, name: 'Bae Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
       ]
    },
-  { id: 3, name: 'TonyStr', active: false, users: 
+  { id: 3, name: 'TonyStr', strategy: 'F/U', ig_username: 'jruro', users: 
     [
         { id: 1, name: 'TonyStr Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'TonyStr Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
         { id: 3, name: 'TonyStr Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
       ]
    },
-  { id: 4, name: 'Hafizer', active: false, users: 
+  { id: 4, name: 'Hafizer', strategy: 'F/U', ig_username: 'jruro', users: 
     [
         { id: 1, name: 'Hafizer Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'Hafizer Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
         { id: 3, name: 'Hafizer Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
       ]
    },
-  { id: 5, name: 'Roller', active: false, users: 
+  { id: 5, name: 'Roller', strategy: 'M-Comment', ig_username: 'jruro', users: 
     [
         { id: 1, name: 'Roller Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'Roller Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
         { id: 3, name: 'Roller Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
       ]
    },
-  { id: 6, name: 'BenFort', active: false, users: 
+  { id: 6, name: 'BenFort', strategy: 'M-Comment', ig_username: 'jruro', users: 
     [
         { id: 1, name: 'BenFort Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'BenFort Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
         { id: 3, name: 'BenFort Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
       ]
    },
-  { id: 7, name: 'Sokanaa', active: false, users: 
+  { id: 7, name: 'Sokanaa', strategy: 'F/U', ig_username: 'jruro', users: 
     [
         { id: 1, name: 'Sokanaa Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'Sokanaa Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
         { id: 3, name: 'Sokanaa Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
       ]
    },
-  { id: 8, name: 'Nuxtor', active: false, users: 
+  { id: 8, name: 'Nuxtor', strategy: 'F/U', ig_username: 'jruro', users: 
     [
         { id: 1, name: 'Nuxtor Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
         { id: 2, name: 'Nuxtor Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
@@ -75,15 +77,15 @@ const  creators = ref([
    },
 
 ]);
-
 const activeCreator = ref(creators.value[0]);
 
-
+// # On click any sidebar item
 const handleMenuItemClick = (item: any) => {
   activeCreator.value = item;
   isMobileSidebarOpen.value = false;
 };
 
+// # Showing Date Format
 function formatTime(date: Date): string {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');

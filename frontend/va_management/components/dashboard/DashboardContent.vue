@@ -13,8 +13,7 @@
 
 <template>
     <div class="mt-8">
-      <!-- <UBadge class="font-bold rounded-full">Badge</UBadge> -->
-      <h2 class="text-2xl font-semibold mb-4">Users For {{ props.activeCreator.name }}</h2>
+      <h2 class="text-lg mb-5">Working with ~ <span class="font-semibold " >{{ props.activeCreator.name }}</span>  <UBadge class="bg-error-100 rounded-full align-top" :class="{'bg-primary-100': props.activeCreator.strategy == 'F/U', 'bg-secondary-100': props.activeCreator.strategy == 'M-Comment'} " >{{props.activeCreator.strategy}}</UBadge></h2>
       <UserCard v-for="user in props.activeCreator.users" :key="user.id" :user="user" />
     </div>
 </template>

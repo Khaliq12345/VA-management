@@ -34,7 +34,8 @@ const isMobile = computed(() => {
       :class="{ 'bg-gray-800 text-white': ceator.id == activeCreator.id }"   
       @click="$emit('menu-item-clicked', ceator)">
         <UIcon name="i-heroicons-users-20-solid" class="mr-2 w-5 h-5" />
-        <span class="ml-3">{{ceator.name}}</span>
+        <span class="ml-1">{{ceator.name}}</span>
+        <UBadge class="bg-error-100 rounded-full" :class="{'bg-primary-100': ceator.strategy == 'F/U', 'bg-secondary-100': ceator.strategy == 'M-Comment'} " >{{ceator.strategy}}</UBadge>
       </UButton>
      
       
