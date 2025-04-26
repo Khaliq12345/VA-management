@@ -1,3 +1,31 @@
+  
+<script setup lang="ts">
+import { computed } from 'vue';
+
+const props = defineProps({
+  user: {
+    type: Object,
+    required: true,
+  },
+});
+
+function statusColor(status: string) {
+  switch (status) {
+    case 'active': return 'bg-green-500'
+    case 'pending': return 'bg-yellow-400'
+    case 'inactive': return 'bg-red-500'
+    default: return 'bg-gray-400'
+  }
+}
+
+function goToDetail(id: number) {
+  // Par exemple rediriger vers `/user/[id]`
+  useRouter().push(`/user/${id}`)
+}
+
+</script>
+
+
 <template>
     <div class="my-4 text-start">
       <div :key="user.id" class="flex bg-white rounded shadow">
@@ -12,34 +40,4 @@
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { computed } from 'vue';
-  
-  const props = defineProps({
-    user: {
-      type: Object,
-      required: true,
-    },
-  });
-  
-  function statusColor(status: string) {
-    switch (status) {
-      case 'active': return 'bg-green-500'
-      case 'pending': return 'bg-yellow-400'
-      case 'inactive': return 'bg-red-500'
-      default: return 'bg-gray-400'
-    }
-  }
-  
-  function goToDetail(id: number) {
-    // Par exemple rediriger vers `/user/[id]`
-    useRouter().push(`/user/${id}`)
-  }
-
-  </script>
-  
-  <style scoped>
-  /* Styles spécifiques à la carte utilisateur si nécessaire */
-  </style>
+</template>
