@@ -3,85 +3,34 @@ import { ref, onMounted } from 'vue';
 
 import DashboardSidebar from '../components/dashboard/DashboardSidebar.vue';
 import DashboardContent from '../components/dashboard/DashboardContent.vue';
+import Loading from '../components/Loading.vue';
+import axios from 'axios';
+
+const loadingData = ref(false);
 
 // # Connected User
 const loggedInUser = ref({
-  name: 'John Doe', // 
+  name: 'Mary Joy Daet', // 
+  email: 'mary_joy_daet@cuhvet.com', // 
   loginTime: new Date(),
   shiftTimeFrom: new Date(),
   shiftTimeTo: new Date(),
+  access_token: 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImdYMko4SzNjQ2JOd3pTSjAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3F3bW9rbXZvaWN6YnhlcXZxY2NtLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI3OTBjZmU1NC1hODY3LTRiZmMtOTg2Yy1iM2FmNjRjODc1YzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ1NzcwNjE2LCJpYXQiOjE3NDU3NjcwMTYsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc0NTc2NzAxNn1dLCJzZXNzaW9uX2lkIjoiYWY4MTE2MTEtNTZmOS00YTllLTg2NGMtZjBiMTNlODQ4NmY3IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.DSFBpkSijLAYorphzxn82PAlA9pJvGE8dmwo-eRunlM',
+   refresh_token: 'n2ofvgsfdajk'
 });
 
 // # For Sidebar
-// const currentTime = ref(formatTime(new Date()));
 const isMobileSidebarOpen = ref(false);
 
-// # Creators List
-const  creators = ref([
-  {
-    id: 1, name: 'Alicei', strategy: 'F/U', ig_username: 'jruro', users:
-      [
-        { id: 1, name: 'Alicei Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'Alicei Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'Alicei Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-  },
-  { id: 2, name: 'Bae', strategy: 'M-Comment', ig_username: 'jruro', users: 
-    [
-        { id: 1, name: 'Bae Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'Bae Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'Bae Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-   },
-  { id: 3, name: 'TonyStr', strategy: 'F/U', ig_username: 'jruro', users: 
-    [
-        { id: 1, name: 'TonyStr Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'TonyStr Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'TonyStr Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-   },
-  { id: 4, name: 'Hafizer', strategy: 'F/U', ig_username: 'jruro', users: 
-    [
-        { id: 1, name: 'Hafizer Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'Hafizer Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'Hafizer Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-   },
-  { id: 5, name: 'Roller', strategy: 'M-Comment', ig_username: 'jruro', users: 
-    [
-        { id: 1, name: 'Roller Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'Roller Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'Roller Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-   },
-  { id: 6, name: 'BenFort', strategy: 'M-Comment', ig_username: 'jruro', users: 
-    [
-        { id: 1, name: 'BenFort Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'BenFort Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'BenFort Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-   },
-  { id: 7, name: 'Sokanaa', strategy: 'F/U', ig_username: 'jruro', users: 
-    [
-        { id: 1, name: 'Sokanaa Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'Sokanaa Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'Sokanaa Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-   },
-  { id: 8, name: 'Nuxtor', strategy: 'F/U', ig_username: 'jruro', users: 
-    [
-        { id: 1, name: 'Nuxtor Durand', email: 'alice@example.com', status: 'active', lastLogin: '2023-05-10T12:00:00' },
-        { id: 2, name: 'Nuxtor Martin', email: 'bob@example.com', status: 'pending', lastLogin: '2023-05-09T10:30:00' },
-        { id: 3, name: 'Nuxtor Dupuis', email: 'claire@example.com', status: 'inactive', lastLogin: '2023-04-28T14:10:00' }
-      ]
-   },
-
-]);
-const activeCreator = ref(creators.value[0]);
+// # Creators & User List
+const users = ref([]);
+const creators = ref([]);
+const activeCreator = ref();
 
 // # On click any sidebar item
-const handleMenuItemClick = (item: any) => {
+const handleMenuItemClick = async (item: any) => {
   activeCreator.value = item;
+  users.value = await getScrapedUsers();
   isMobileSidebarOpen.value = false;
 };
 
@@ -93,17 +42,68 @@ function formatTime(date: Date): string {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-onMounted(() => {
-  // setInterval(() => {
-  //   currentTime.value = formatTime(new Date());
-  // }, 1000);
+onMounted(async () => {
+  creators.value = await fetchVaInfo();
 });
+
+
+const fetchVaInfo = async () => {
+  loadingData.value = true;
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/get-va-info', {
+      params: {
+        va_email: loggedInUser.value.email
+      },
+      headers: {
+        'access_token': loggedInUser.value.access_token,
+        'refresh_token': loggedInUser.value.refresh_token
+      }
+    });
+    console.log('Got Data :', response.data);
+    return response.data.records;
+  } catch (err) {
+    console.error('Error:', err);
+    return null;
+  } finally {
+    loadingData.value = false;
+  }
+};
+
+const getScrapedUsers = async () => {
+  loadingData.value = true;
+  const tres = {
+    creator_username: activeCreator.value['Model Assigned'],
+    table_id: activeCreator.value.table_id,
+    base_id: activeCreator.value.base_id
+  };
+  console.log("Real params : ", tres);
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/get-scraped-users', {
+      params: {
+        creator_username: "Bea", // activeCreator.value['Model Assigned'], 
+        table_id: "tblP5lovqxPPtaVOc", // activeCreator.value.table_id, 
+        base_id: "appuO8vqTQ9N0Gyvb" //activeCreator.value.base_id
+      },
+      headers: {
+        'access_token': loggedInUser.value.access_token,
+        'refresh_token': loggedInUser.value.refresh_token
+      }
+    });
+    console.log('Got User Data :', response.data);
+    return response.data;
+  } catch (err) {
+    console.error('Error:', err);
+    return null;
+  } finally {
+    loadingData.value = false;
+  }
+};
 
 
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100 flex">
+  <div class="min-h-screen  flex">
     <DashboardSidebar class="hidden md:flex flex-shrink-0 w-3/12" :creators="creators" :activeCreator="activeCreator"
       @menu-item-clicked="handleMenuItemClick" />
 
@@ -126,6 +126,7 @@ onMounted(() => {
       </header>
 
       <main class="flex-1 text-center overflow-y-auto p-4 sm:p-6 lg:p-8">
+
         <div class="flex justify-center ">
           <!-- User Infos -->
           <div class="flex flex-col  ml-4">
@@ -140,8 +141,19 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Dash Content -->
-        <DashboardContent :activeCreator="activeCreator" />
+
+        <div v-if="loadingData" class="place-items-center place-content-center my-15">
+          <Loading />
+          <div class="container mx-auto p-4 text-center">
+            <p>Loading Data ... </p>
+          </div>
+        </div>
+        <div v-else class="">
+          <!-- Dash Content -->
+          <DashboardContent :activeCreator="activeCreator" :users="users" :can-work="creators.length != 0" />
+
+        </div>
+
 
       </main>
 
@@ -157,7 +169,8 @@ onMounted(() => {
           </div> -->
         </template>
         <template #body>
-          <DashboardSidebar :creators="creators" :activeCreator="activeCreator" @menu-item-clicked="handleMenuItemClick" @close-sidebar="isMobileSidebarOpen = false" />
+          <DashboardSidebar :creators="creators" :activeCreator="activeCreator" @menu-item-clicked="handleMenuItemClick"
+            @close-sidebar="isMobileSidebarOpen = false" />
         </template>
       </UDrawer>
 
