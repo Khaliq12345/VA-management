@@ -30,6 +30,7 @@ async def login(
                 "access_token": response.session.access_token,
                 "token_type": "bearer",
                 "refresh_token": response.session.refresh_token,
+                "email": email,
             },
             # "user": response.user
         }
