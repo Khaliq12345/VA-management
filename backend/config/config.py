@@ -19,3 +19,8 @@ APP_ENV = cli_parser.args.env
 
 # --------Airtable-------------
 AIRTABLE_PERSONAL_ACCESS_TOKEN = os.getenv("AIRTABLE_PERSONAL_ACCESS_TOKEN")
+SUMMARY_TABLE_ID = os.getenv("summary_table_id")
+SUMMARY_BASE_ID = os.getenv("summary_base_id")
+
+VA_INFO_TABLE_ID = os.getenv("va_info_table_id")
+VA_INFO_BASE_ID = os.getenv("va_info_base_id")
