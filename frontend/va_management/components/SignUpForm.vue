@@ -1,8 +1,9 @@
 <template>
     <div class="flex shadow-md content">
+        <div class="bg-gray-800 w-32 flex items-center justify-center font-bold text-white tracking-widest right-block">REGISTER</div>
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
-            <form @submit.prevent="handleSubmit" class="w-full">
-                <div v-if="error" class="error"><strong>{{ error }}</strong></div>
+            <form @submit.prevent class="w-full">
+                <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
                 <div class="mb-4">
                     <UInput
                         v-model="email"
@@ -38,56 +39,75 @@
                         type="submit"
                         @click="handleSubmit"
                         class="tracking-widest font-light cursor-pointer"
+                        v-bind:disabled="isLoading || !canSubmitForm"
                     >
                         Register
                     </UButton>
                 </div>
             </form>
         </div>
-        <div class="bg-gray-800 w-32 flex items-center justify-center font-bold text-white tracking-widest right-block">REGISTER</div>
     </div>
 </template>
 
 
 <script setup>
+    import axios from 'axios'
+
 
     const email = ref('')
     const password = ref('')
     const acceptTerms = ref(false)
     const isLoading = ref(false)
-    const error = ref(null)
+    const errorMsg = ref(null)
+    const canSubmitForm = computed(() => email.value && password.value && acceptTerms.value)
+
+    const router = useRouter()
+
+    const baseUrl = useRuntimeConfig().public.API_BASE_URL
+    const signUpApiKey = useRuntimeConfig().public.SIGNUP_API_KEY
 
     const handleSubmit = async () => {
         if (!email.value || !password.value) {
-            error.value = "Veuillez remplir tous les champs"
+            errorMsg.value = "Veuillez remplir tous les champs"
             return
         }
-
         try {
             isLoading.value = true
-            error.value = null
-            const { data, pending, err } = await useFetch("api/register", {
-                method: 'POST',
-                body: {
+            errorMsg.value = null
+            const response = await axios.post(`${baseUrl}/signup`, null, {
+                params: {
                     email: email.value,
-                    password: password.value,
+                    password: password.value
                 },
-                immediate: false,
+                headers: {
+                    'Accept': 'application/json',
+                    'api-key': signUpApiKey
+                }
             })
-            if (err.value) {
-                console.error('Register failed:', error.value.data);
-                return
-            }
-            console.log('Register success:', data.value);
-
-            // localStorage.setItem('token', data.value.token);
+            console.log('Register success:', response.data)
+            router.push('/auth/sign-in')
         }
-        catch(e) {
-            console.log(`Une erreur s'est produite :${e}`)
+        catch(error) {
+            if (error.response) {
+                const msg = error.response.data?.message || error.response.data?.error || error.response.data?.detail || ''
+                console.error(`Une erreur s'est produite :${error.response.data}`)
+                if (msg.includes("Unable to validate email address: invalid format")) {
+                    errorMsg.value = "Adresse email invalide"
+                }
+                else if (msg.includes("Password should be at least 6 characters.")) {
+                    errorMsg.value = "Le mot de passe doit contenir au moins 6 caractères"
+                }
+                else {
+                    errorMsg.value = "Une erreur s'est produite lors de l'enregistrement"
+                }
+                throw new Error(msg || 'Erreur inconnue')
+            }
+            else {
+                console.error(`Une erreur s'est produite :${error.message}`)
+            }
         }
         finally {
             isLoading.value = false
-            error.value = null
         }
     }
 
@@ -99,12 +119,16 @@
     .content {
         border-radius: 4px;
         overflow: hidden;
-        height: 40vh;
+        min-height: 40vh;
     }
 
     /* :where(.i-lucide\:check) {
         background-color: white !important;
     } */
+
+    input {
+        color: black;
+    }
 
     .btn-block {
         display: flex;
@@ -120,7 +144,7 @@
         animation: spin 1s linear infinite;
     }
 
-    .error {
+    .errorMsg {
         text-align: center;
         color: red;
         margin-top: 1rem;

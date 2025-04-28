@@ -1,8 +1,8 @@
 <template>
     <div class="flex shadow-md content">
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
-            <form @submit.prevent="handleSubmit" class="w-full">
-                <div v-if="error" class="error"><strong>{{ error }}</strong></div>
+            <form @submit.prevent class="w-full">
+                <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
                 <div class="mb-4">
                     <UInput
                         v-model="email"
@@ -39,6 +39,7 @@
                         type="submit"
                         @click="handleSubmit"
                         class="tracking-widest font-light cursor-pointer"
+                        v-bind:disabled="isLoading || !canSubmitForm"
                     >
                         Login
                     </UButton>
@@ -51,44 +52,67 @@
 
 
 <script setup>
+    import axios from 'axios'
 
     const email = ref('')
     const password = ref('')
     const rememberMe = ref(false)
     const isLoading = ref(false)
-    const error = ref(null)
+    const errorMsg = ref(null)
+    const canSubmitForm = computed(() => email.value && password.value)
+
+    const router = useRouter()
+
+    const baseUrl = useRuntimeConfig().public.API_BASE_URL
 
     const handleSubmit = async () => {
         if (!email.value || !password.value) {
-            error.value = "Veuillez remplir tous les champs"
+            errorMsg.value = "Veuillez remplir tous les champs"
             return
         }
-
         try {
             isLoading.value = true
-            error.value = null
-            const { data, pending, err } = await useFetch("api/login", {
-                method: 'POST',
-                body: {
+            errorMsg.value = null
+            const response = await axios.post(`${baseUrl}/login`, null, {
+                params: {
                     email: email.value,
-                    password: password.value,
+                    password: password.value
                 },
-                immediate: false,
+                headers: {
+                    'Accept': 'application/json'
+                }
             })
-            if (err.value) {
-                console.error('Login failed:', error.value.data);
-                return
-            }
-            console.log('Login success:', data.value);
-
-            // localStorage.setItem('token', data.value.token);
+            console.log('Login success:', response.data)
+            localStorage.setItem('access-token', response.data.session.access_token);
+            router.push('/')
         }
-        catch(e) {
-            console.log(`Une erreur s'est produite :${e}`)
+        catch(error) {
+            if (error.response) {
+                const msg = error.response.data?.message || error.response.data?.error || error.response.data?.detail || ''
+                console.error(`Une erreur s'est produite :${error.response.data}`)
+                if (msg.includes('Invalid login credentials')) {
+                    errorMsg.value = "Les identifiants fournis ne correspondent pas à nos enregistrements."
+                }
+                else if (msg.includes('Email not found')) {
+                    errorMsg.value = "Cet email n'est associé à aucun compte"
+                }
+                else if (msg.includes('Your email is not verified')) {
+                    errorMsg.value = "Veuillez vérifier votre adresse e-mail"
+                }
+                else if (msg.includes('Email not confirmed')) {
+                    errorMsg.value = "Veuillez vérifier votre adresse e-mail"
+                }
+                else {
+                    errorMsg.value = "Une erreur s'est produite lors de la connexion"
+                }
+                throw new Error(msg || 'Erreur inconnue')
+            }
+            else {
+                console.error(`Une erreur s'est produite :${error.message}`)
+            }
         }
         finally {
             isLoading.value = false
-            error.value = null
         }
     }
 
@@ -100,12 +124,16 @@
     .content {
         border-radius: 4px;
         overflow: hidden;
-        height: 40vh;
+        min-height: 40vh;
     }
 
     /* :where(.i-lucide\:check) {
         background-color: white !important;
     } */
+
+    input {
+        color: black;
+    }
 
     .btn-block {
         display: flex;
