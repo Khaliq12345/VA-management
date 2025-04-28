@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-slate-500 flex items-center justify-center">
-      <SignInForm />
-    </div>
+    <main>
+        <h1>Home Page</h1>
+    </main>
 </template>

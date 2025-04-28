@@ -2,10 +2,11 @@
     <div class="flex shadow-md content">
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
             <form @submit.prevent="handleSubmit" class="w-full">
+                <div v-if="error" class="error"><strong>{{ error }}</strong></div>
                 <div class="mb-4">
                     <UInput
-                        v-model="username"
-                        placeholder="Username"
+                        v-model="email"
+                        placeholder="Email"
                         icon="i-heroicons-user"
                         class="bg-gray-200 w-full"
                     />
@@ -20,11 +21,11 @@
                     />
                 </div>
                 <div class="flex justify-between items-center mb-4 text-sm">
-                    <a href="#" class="text-gray-500 hover:underline">Forgot Password?</a>
+                    <NuxtLink to="#" class="text-gray-500 hover:underline text-sm">Forgot Password ?</NuxtLink>
                     <UCheckbox v-model="rememberMe" label="Remember me" class="cursor-pointer" />
                 </div>
                 <div class="mt-[-10px]">
-                    <a href="#" class="text-gray-500 hover:underline text-sm">Sign Up</a>
+                    <NuxtLink to="/auth/sign-up" class="text-gray-500 hover:underline text-sm">Sign Up</NuxtLink>
                 </div>
                 <div
                     v-if="isLoading"
@@ -51,17 +52,44 @@
 
 <script setup>
 
-    const username = ref('')
+    const email = ref('')
     const password = ref('')
     const rememberMe = ref(false)
     const isLoading = ref(false)
+    const error = ref(null)
 
-    const handleSubmit = () => {
-        console.log('Formulaire soumis:', {
-            username: username.value,
-            password: password.value,
-            rememberMe: rememberMe.value
-        })
+    const handleSubmit = async () => {
+        if (!email.value || !password.value) {
+            error.value = "Veuillez remplir tous les champs"
+            return
+        }
+
+        try {
+            isLoading.value = true
+            error.value = null
+            const { data, pending, err } = await useFetch("api/login", {
+                method: 'POST',
+                body: {
+                    email: email.value,
+                    password: password.value,
+                },
+                immediate: false,
+            })
+            if (err.value) {
+                console.error('Login failed:', error.value.data);
+                return
+            }
+            console.log('Login success:', data.value);
+
+            // localStorage.setItem('token', data.value.token);
+        }
+        catch(e) {
+            console.log(`Une erreur s'est produite :${e}`)
+        }
+        finally {
+            isLoading.value = false
+            error.value = null
+        }
     }
 
 </script>
@@ -75,9 +103,9 @@
         height: 40vh;
     }
 
-    :where(.i-lucide\:check) {
+    /* :where(.i-lucide\:check) {
         background-color: white !important;
-    }
+    } */
 
     .btn-block {
         display: flex;
@@ -91,6 +119,13 @@
         border: solid 3px #1E3A89;
         border-top: 5px solid transparent;
         animation: spin 1s linear infinite;
+    }
+
+    .error {
+        text-align: center;
+        color: red;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
     }
 
     @keyframes spin {
