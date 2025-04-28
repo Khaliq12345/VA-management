@@ -4,19 +4,8 @@ from dateparser import parse
 
 
 async def get_scraped_users_from_supabase(
-    supabase: AsyncClient, va_id: int, limit: int = 20, offset: int = 0
+    supabase: AsyncClient, creator_username: int, limit: int = 20, offset: int = 0
 ):
-    # Récupérer 'creators' depuis va_table
-    va_table_response = (
-        await supabase.table("va_table")
-        .select("creator")
-        .eq("id", va_id)
-        .single()
-        .execute()
-    )
-    va_table_data = va_table_response.data
-    creator_value = va_table_data.get("creator")
-
     # Définir la date limite de 30 jours
     today = datetime.now(timezone.utc)
     thirty_days_ago = today - timedelta(days=30)
@@ -26,7 +15,7 @@ async def get_scraped_users_from_supabase(
     scraped_users_response = await (
         supabase.table("scraped_users")
         .select("*, interaction_table(*)")
-        .eq("interaction_table.creator_username", creator_value)
+        .eq("interaction_table.creator_username", creator_username)
         .or_(condition)
         .limit(limit)
         .offset(offset)
