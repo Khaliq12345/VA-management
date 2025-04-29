@@ -65,7 +65,9 @@
 
 <script setup lang="ts">
 
+
     // Ce que Euvince avait fait
+
     /* defineProps<{
         mode: 'sign-in' | 'sign-up'
         email: string
@@ -76,6 +78,7 @@
         errorMsg: string | null
         onSubmit: () => void
     }>() */
+
 
     // Ce que Mr Khaliq propose
 
