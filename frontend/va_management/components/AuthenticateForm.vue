@@ -46,19 +46,15 @@
 
 <script setup lang="ts">
 
-    const email: Ref<string> = ref('')
-    const password: Ref<string> = ref('')
-    const isLoading: Ref<boolean> = ref(false)
-    const errorMsg: Ref<string | null> = ref('')
-    const canSubmitForm: Ref<boolean> = ref(false)
-
-
     defineProps<{
         mode: 'sign-in' | 'sign-up'
+        email: string
+        password: string
+        canSubmitForm: boolean
+        isLoading: boolean
+        errorMsg: string | null
         onSubmit: () => void
     }>()
-
-
 
 </script>
 

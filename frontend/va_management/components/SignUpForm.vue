@@ -53,6 +53,7 @@
 
 
 <script setup lang="ts">
+    import { signUpUser } from '~/utils/sign-up'
 
     /* Déclarations des variables */
     const email: Ref<string> = ref('')
