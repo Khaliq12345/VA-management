@@ -1,23 +1,20 @@
 <template>
     <AuthenticateForm
         :mode="'sign-in'"
-        :email="email"
-        :password="password"
-        :canSubmitForm="canSubmitForm"
-        :isLoading="isLoading"
-        :errorMsg="errorMsg"
         :onSubmit="handleSubmit"
     />
 </template>
 
 
 <script setup lang="ts">
-
+    import { signInUser } from '~/utils/sign-in'
+    
     /* Déclaration des variables */
     const email: Ref<string> = ref('')
     const password: Ref<string> = ref('')
     const isLoading: Ref<boolean> = ref(false)
     const errorMsg: Ref<string | null> = ref(null)
+
 
     /* Vérification de soumission du formulaire */
     const canSubmitForm = computed(() => email.value && password.value)

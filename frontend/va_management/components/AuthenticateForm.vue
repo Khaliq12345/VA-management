@@ -2,10 +2,10 @@
     <div class="flex shadow-md content">
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
             <form @submit.prevent class="w-full">
-                <div v-if="errorMsg?.value" class="errorMsg"><strong>{{ errorMsg?.value }}</strong></div>
+                <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
                 <div class="mb-4">
                     <UInput
-                        v-model="email.value"
+                        v-model="email"
                         placeholder="Email"
                         icon="i-heroicons-user"
                         class="bg-gray-200 w-full"
@@ -13,7 +13,7 @@
                 </div>
                 <div class="mb-4">
                     <UInput
-                        v-model="password.value"
+                        v-model="password"
                         type="password"
                         placeholder="********"
                         icon="i-heroicons-lock-closed"
@@ -21,7 +21,7 @@
                     />
                 </div>
                 <div
-                    v-if="isLoading.value"
+                    v-if="isLoading"
                     class="btn-block"
                 >
                     <div class="loader"></div>
@@ -32,7 +32,7 @@
                         type="submit"
                         @click="onSubmit"
                         class="tracking-widest font-light cursor-pointer"
-                        v-bind:disabled="isLoading.value || !canSubmitForm"
+                        v-bind:disabled="isLoading || !canSubmitForm"
                     >
                         Login
                     </UButton>
@@ -46,15 +46,19 @@
 
 <script setup lang="ts">
 
+    const email: Ref<string> = ref('')
+    const password: Ref<string> = ref('')
+    const isLoading: Ref<boolean> = ref(false)
+    const errorMsg: Ref<string | null> = ref('')
+    const canSubmitForm: Ref<boolean> = ref(false)
+
+
     defineProps<{
         mode: 'sign-in' | 'sign-up'
-        email: Ref<string>
-        password: Ref<string>
-        canSubmitForm: boolean
-        isLoading: Ref<boolean>
-        errorMsg: Ref<string | null>
         onSubmit: () => void
     }>()
+
+
 
 </script>
 
