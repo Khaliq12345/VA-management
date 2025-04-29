@@ -21,6 +21,14 @@
                         class="bg-gray-200 w-full"
                     />
                 </div>
+                <div class="mb-4">
+                    <UInput
+                        v-model="signUpApiKey"
+                        placeholder="Clé API"
+                        icon="i-heroicons-lock-closed"
+                        class="bg-gray-200 w-full"
+                    />
+                </div>
                 <div
                     v-if="isLoading"
                     class="btn-block"
@@ -44,21 +52,21 @@
 </template>
 
 
-<script setup>
-    import axios from 'axios'
+<script setup lang="ts">
 
+    /* Déclarations des variables */
+    const email: Ref<string> = ref('')
+    const password: Ref<string> = ref('')
+    const signUpApiKey: Ref<string> = ref('')
+    const isLoading: Ref<boolean> = ref(false)
+    const errorMsg: Ref<string | null> = ref(null)
 
-    const email = ref('')
-    const password = ref('')
-    const isLoading = ref(false)
-    const errorMsg = ref(null)
-    const canSubmitForm = computed(() => email.value && password.value)
+    /* Vérification de soumission du formulaire */
+    const canSubmitForm = computed(() => email.value && password.value && signUpApiKey.value)
 
     const router = useRouter()
 
-    const baseUrl = useRuntimeConfig().public.API_BASE_URL
-    const signUpApiKey = useRuntimeConfig().public.SIGNUP_API_KEY
-
+    /* Fonction de traitement pour enregistrer un user */
     const handleSubmit = async () => {
         if (!email.value || !password.value) {
             errorMsg.value = "Veuillez remplir tous les champs"
@@ -67,20 +75,12 @@
         try {
             isLoading.value = true
             errorMsg.value = null
-            const response = await axios.post(`${baseUrl}/signup`, null, {
-                params: {
-                    email: email.value,
-                    password: password.value
-                },
-                headers: {
-                    'Accept': 'application/json',
-                    'api-key': signUpApiKey
-                }
-            })
+            const response = await signUpUser(email.value, password.value, signUpApiKey.value)
             console.log('Register success:', response.data)
             router.push('/auth/sign-in')
         }
-        catch(error) {
+        catch(error: any) {
+            /* Gestion des erreurs */
             if (error.response) {
                 const msg = error.response.data?.message || error.response.data?.error || error.response.data?.detail || ''
                 console.error(`Une erreur s'est produite :${error.response.data}`)
@@ -89,6 +89,9 @@
                 }
                 else if (msg.includes("Password should be at least 6 characters.")) {
                     errorMsg.value = "Le mot de passe doit contenir au moins 6 caractères"
+                }
+                else if (msg.includes("Invalid API Key!")) {
+                    errorMsg.value = "Clé API invalide"
                 }
                 else {
                     errorMsg.value = "Une erreur s'est produite lors de l'enregistrement"
