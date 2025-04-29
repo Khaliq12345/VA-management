@@ -2,10 +2,10 @@
     <div class="flex shadow-md content">
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
             <form @submit.prevent class="w-full">
-                <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
+                <div v-if="errorMsg?.value" class="errorMsg"><strong>{{ errorMsg?.value }}</strong></div>
                 <div class="mb-4">
                     <UInput
-                        v-model="email"
+                        v-model="email.value"
                         placeholder="Email"
                         icon="i-heroicons-user"
                         class="bg-gray-200 w-full"
@@ -13,7 +13,7 @@
                 </div>
                 <div class="mb-4">
                     <UInput
-                        v-model="password"
+                        v-model="password.value"
                         type="password"
                         placeholder="********"
                         icon="i-heroicons-lock-closed"
@@ -21,7 +21,7 @@
                     />
                 </div>
                 <div
-                    v-if="isLoading"
+                    v-if="isLoading.value"
                     class="btn-block"
                 >
                     <div class="loader"></div>
@@ -32,7 +32,7 @@
                         type="submit"
                         @click="onSubmit"
                         class="tracking-widest font-light cursor-pointer"
-                        v-bind:disabled="isLoading || !canSubmitForm"
+                        v-bind:disabled="isLoading.value || !canSubmitForm"
                     >
                         Login
                     </UButton>
@@ -47,13 +47,12 @@
 <script setup lang="ts">
 
     defineProps<{
-        mode: 'login' | 'register'
-        email: string
-        password: string
+        mode: 'sign-in' | 'sign-up'
+        email: Ref<string>
+        password: Ref<string>
         canSubmitForm: boolean
-        isLoading: boolean
-        errorMsg: string | null
-        // showApiKey?: boolean
+        isLoading: Ref<boolean>
+        errorMsg: Ref<string | null>
         onSubmit: () => void
     }>()
 
