@@ -21,12 +21,6 @@
                         class="bg-gray-200 w-full"
                     />
                 </div>
-                <div class="flex justify-between items-center mb-4 text-sm">
-                    <UCheckbox v-model="acceptTerms" label="J'ai compris et lu les conditions d'utilisation" class="cursor-pointer" />
-                </div>
-                <div class="mt-[-10px]">
-                    <NuxtLink to="/auth/sign-in" class="text-gray-500 hover:underline text-sm">Sign In</NuxtLink>
-                </div>
                 <div
                     v-if="isLoading"
                     class="btn-block"
@@ -56,10 +50,9 @@
 
     const email = ref('')
     const password = ref('')
-    const acceptTerms = ref(false)
     const isLoading = ref(false)
     const errorMsg = ref(null)
-    const canSubmitForm = computed(() => email.value && password.value && acceptTerms.value)
+    const canSubmitForm = computed(() => email.value && password.value)
 
     const router = useRouter()
 
@@ -121,10 +114,6 @@
         overflow: hidden;
         min-height: 40vh;
     }
-
-    /* :where(.i-lucide\:check) {
-        background-color: white !important;
-    } */
 
     input {
         color: black;

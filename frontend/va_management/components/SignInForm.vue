@@ -20,13 +20,6 @@
                         class="bg-gray-200 w-full"
                     />
                 </div>
-                <div class="flex justify-between items-center mb-4 text-sm">
-                    <NuxtLink to="#" class="text-gray-500 hover:underline text-sm">Forgot Password ?</NuxtLink>
-                    <UCheckbox v-model="rememberMe" label="Remember me" class="cursor-pointer" />
-                </div>
-                <div class="mt-[-10px]">
-                    <NuxtLink to="/auth/sign-up" class="text-gray-500 hover:underline text-sm">Sign Up</NuxtLink>
-                </div>
                 <div
                     v-if="isLoading"
                     class="btn-block"
@@ -56,7 +49,6 @@
 
     const email = ref('')
     const password = ref('')
-    const rememberMe = ref(false)
     const isLoading = ref(false)
     const errorMsg = ref(null)
     const canSubmitForm = computed(() => email.value && password.value)
@@ -126,10 +118,6 @@
         overflow: hidden;
         min-height: 40vh;
     }
-
-    /* :where(.i-lucide\:check) {
-        background-color: white !important;
-    } */
 
     input {
         color: black;
