@@ -1,5 +1,11 @@
 <template>
     <div class="flex shadow-md content">
+        <div
+            v-if="mode === 'sign-up'"
+            class="bg-gray-800 w-32 flex items-center justify-center font-bold text-white tracking-widest right-block"
+        >
+            REGISTER
+        </div>
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
             <form @submit.prevent class="w-full">
                 <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
@@ -20,6 +26,14 @@
                         class="bg-gray-200 w-full"
                     />
                 </div>
+                <div v-if="mode === 'sign-up'" class="mb-4">
+                    <UInput
+                        v-model="signUpApiKey"
+                        placeholder="Clé API"
+                        icon="i-heroicons-lock-closed"
+                        class="bg-gray-200 w-full"
+                    />
+                </div>
                 <div
                     v-if="isLoading"
                     class="btn-block"
@@ -34,25 +48,46 @@
                         class="tracking-widest font-light cursor-pointer"
                         v-bind:disabled="isLoading || !canSubmitForm"
                     >
-                        Login
+                        {{ mode === "sign-in" ? "Login" : "Register" }}
                     </UButton>
                 </div>
             </form>
         </div>
-        <div class="bg-gray-800 w-32 flex items-center justify-center font-bold text-white tracking-widest right-block">LOGIN</div>
+        <div
+            v-if="mode === 'sign-in'"
+            class="bg-gray-800 w-32 flex items-center justify-center font-bold text-white tracking-widest right-block"
+        >
+            LOGIN
+        </div>
     </div>
 </template>
 
 
 <script setup lang="ts">
 
-    defineProps<{
+    // Ce que Euvince avait fait
+    /* defineProps<{
         mode: 'sign-in' | 'sign-up'
         email: string
         password: string
+        signUpApiKey: string | undefined
         canSubmitForm: boolean
         isLoading: boolean
         errorMsg: string | null
+        onSubmit: () => void
+    }>() */
+
+    // Ce que Mr Khaliq propose
+
+    const email: Ref<string> = ref('')
+    const password: Ref<string> = ref('')
+    const signUpApiKey: Ref<string> = ref('')
+    const isLoading: Ref<boolean> = ref(false)
+    const errorMsg: Ref<string | null> = ref('')
+    const canSubmitForm: Ref<boolean> = ref(false)
+
+    defineProps<{
+        mode: 'sign-in' | 'sign-up'
         onSubmit: () => void
     }>()
 
