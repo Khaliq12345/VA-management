@@ -33,28 +33,30 @@ const isMobile = breakpoints.smaller('md')
 </script>
 
 <template>
-  <ClientOnly>
-    <div :class="{ 'py-4 pl-4 flex flex-col': isMobile, 'bg-gray-200 p-4 flex flex-col': !isMobile }">
-    <div v-if="!isMobile" class="flex justify-center mb-4">
-      <h3 class="ml-3 text-xl font-bold text-center ">DashBoard</h3>
-    </div>
-    <div :class="{ 'items-center': isMobile }">
-      <h3 class="ml-3 text-xl font-semibold text-center ">Creators List</h3>
-    </div>
-    <USeparator class="my-4 " color="neutral" size="md" />
-    <nav class="flex-1 space-y-4">
-      <UButton v-for="ceator in props.creators" variant="ghost"
-        class="text-black hover:bg-gray-700 hover:text-white flex items-center py-2  rounded-lg w-full"
-        :class="{ 'bg-gray-800 text-white': ceator['Model Assigned'] == activeCreator['Model Assigned'] }"
-        @click="$emit('menu-item-clicked', ceator)">
-        <UIcon name="i-heroicons-users-20-solid" class="mr-2 w-5 h-5" />
-        <span class="ml-1">{{ ceator['Model Assigned'] }}</span>
-        <UBadge class="bg-error-100 rounded-full"
-          :class="{ 'bg-primary-100': ceator.Strategy == 'F/U', 'bg-secondary-100': ceator.Strategy == 'Mass Comment' }">
-          {{ ceator.Strategy }}</UBadge>
-      </UButton>
-    </nav>
-  </div>
-  </ClientOnly>
   
+  <ClientOnly>
+    <div class="hidden md:flex flex-shrink-0 md:w-4/12 lg:w-3/12"
+      :class="{ 'py-4 pl-4 flex flex-col': isMobile, 'bg-gray-200 p-4 flex flex-col': !isMobile }">
+      <div v-if="!isMobile" class="flex justify-center mb-4">
+        <h3 class="ml-3 text-xl font-bold text-center ">DashBoard</h3>
+      </div>
+      <div :class="{ 'items-center': isMobile }">
+        <h3 class="ml-3 text-xl font-semibold text-center ">Creators List</h3>
+      </div>
+      <USeparator class="my-4 " color="neutral" size="md" />
+      <nav class="flex-1 space-y-4">
+        <UButton v-for="ceator in props.creators" variant="ghost"
+          class="text-black hover:bg-gray-700 hover:text-white flex items-center py-2  rounded-lg w-full"
+          :class="{ 'bg-gray-800 text-white': ceator['Model Assigned'] == activeCreator['Model Assigned'] }"
+          @click="$emit('menu-item-clicked', ceator)">
+          <UIcon name="i-heroicons-users-20-solid" class="mr-2 w-5 h-5" />
+          <span class="ml-1">{{ ceator['Model Assigned'] }}</span>
+          <UBadge class="bg-error-100 rounded-full"
+            :class="{ 'bg-primary-100': ceator.Strategy == 'F/U', 'bg-secondary-100': ceator.Strategy == 'Mass Comment' }">
+            {{ ceator.Strategy }}</UBadge>
+        </UButton>
+      </nav>
+    </div>
+  </ClientOnly>
+
 </template>

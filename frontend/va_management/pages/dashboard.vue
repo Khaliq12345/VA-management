@@ -19,7 +19,7 @@ const
 
 <template>
   <div class="min-h-screen  flex">
-    <DashboardSidebar class="hidden md:flex flex-shrink-0 w-3/12" :creators="creators" :activeCreator="activeCreator"
+    <DashboardSidebar  :creators="creators" :activeCreator="activeCreator"
       @menu-item-clicked="handleMenuItemClick" />
 
     <div class="flex-1 flex flex-col overflow-hidden">

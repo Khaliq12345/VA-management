@@ -89,9 +89,8 @@ async def get_creators_info_from_airtable(
     instagram_usernames = []
     for record in records:
         fields = record.get("fields", {})
-        if fields.get("New Username"):
-            creators_usernames.append(creator_name)
-            instagram_usernames.append(fields.get("New Username"))
+        creators_usernames.append(creator_name)
+        instagram_usernames.append(fields.get("Instagram Username"))
 
     return instagram_usernames, creators_usernames
 
@@ -140,7 +139,7 @@ async def get_va_aritables(
             for record in records
             if check_if_record_is_in_time_shift(start_datetime, end_datetime, now_time)
         ]
-
+        # print(records)
         return records
 
 
