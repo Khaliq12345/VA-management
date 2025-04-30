@@ -1,5 +1,5 @@
 <template>
-    <div class="flex shadow-md content">
+    <!--<div class="flex shadow-md content">
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
             <form @submit.prevent class="w-full">
                 <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
@@ -40,7 +40,11 @@
             </form>
         </div>
         <div class="bg-gray-800 w-32 flex items-center justify-center font-bold text-white tracking-widest right-block">LOGIN</div>
-    </div>
+    </div>-->
+    <AuthenticateForm
+        mode="sign-in"
+        onSubmit=handleSubmit()
+    />
 </template>
 
 
