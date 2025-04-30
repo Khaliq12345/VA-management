@@ -13,6 +13,7 @@
     "@formkit/auto-animate": "^0.8.2",
     "@nuxt/ui": "^3.1.0",
     "@nuxtjs/axios": "^5.13.6",
+    "@vueuse/core": "^13.1.0",
     "apexcharts": "^4.7.0",
     "nuxt": "^3.16.2",
     "vue": "^3.5.13",
