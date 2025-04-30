@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useBreakpoints } from '@vueuse/core'
+
 const props = defineProps({
   creators: {
     type: Object,
@@ -13,13 +15,26 @@ const props = defineProps({
 
 const emit = defineEmits(['menu-item-clicked', 'close-sidebar']);
 
-const isMobile = computed(() => {
-  return window.innerWidth < 768; // Seuil pour considérer comme mobile (md breakpoint Tailwind)
-});
+// Defining breakpoints (matches Tailwind's defaults)
+const breakpoints = useBreakpoints({
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536
+})
+
+// Reactive breakpoint states
+const isMobile = breakpoints.smaller('md')
+// const isMobile = computed(() => {
+//   return window.innerWidth < 768; // Seuil pour considérer comme mobile (md breakpoint Tailwind)
+// });
+
 </script>
 
 <template>
-  <div :class="{ 'py-4 pl-4 flex flex-col': isMobile, 'bg-gray-200 p-4 flex flex-col': !isMobile }">
+  <ClientOnly>
+    <div :class="{ 'py-4 pl-4 flex flex-col': isMobile, 'bg-gray-200 p-4 flex flex-col': !isMobile }">
     <div v-if="!isMobile" class="flex justify-center mb-4">
       <h3 class="ml-3 text-xl font-bold text-center ">DashBoard</h3>
     </div>
@@ -40,4 +55,6 @@ const isMobile = computed(() => {
       </UButton>
     </nav>
   </div>
+  </ClientOnly>
+  
 </template>
