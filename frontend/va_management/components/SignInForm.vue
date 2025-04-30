@@ -42,8 +42,8 @@
         <div class="bg-gray-800 w-32 flex items-center justify-center font-bold text-white tracking-widest right-block">LOGIN</div>
     </div>-->
     <AuthenticateForm
-        mode="sign-in"
-        onSubmit=handleSubmit()
+        :mode="'sign-in'"
+        :onSubmit=handleSubmit
     />
 </template>
 
@@ -51,67 +51,26 @@
 <script setup lang="ts">
     import { signInUser } from '~/utils/sign-in'
 
-    /* Déclaration des variables */
-    const email = ref('')
-    const password = ref('')
-    const isLoading = ref(false)
-    const errorMsg = ref('')
+    // /* Déclaration des variables */
+    // const email = ref('')
+    // const password = ref('')
+    // const isLoading = ref(false)
+    // const errorMsg = ref('')
 
-    /* Vérification de soumission du formulaire */
-    const canSubmitForm = computed(() => !!email.value && !!password.value)
-
-    const router = useRouter()
 
     /* Fonction de traitement pour authentifier un user */
-    const handleSubmit = async () => {
-        if (!email.value || !password.value) {
-            errorMsg.value = "Veuillez remplir tous les champs"
-            return
-        }
-        try {
-            isLoading.value = true
-            errorMsg.value = ''
-            const response = await signInUser(email.value, password.value)
-            console.log('Login success:', response.data)
-            /* Stockage dans le local storage du navigateur */
-            const sessionData = {
-                access_token: response.data.session.access_token,
-                token_type: response.data.session.token_type,
-                refresh_token: response.data.session.refresh_token,
-                email: response.data.session.email,
-            };
-            localStorage.setItem('session', JSON.stringify(sessionData));
-            router.push('/')
-        }
-        catch(error: any) {
-            /* Gestion des erreurs */
-            if (error.response) {
-                const msg = error.response.data?.message || error.response.data?.error || error.response.data?.detail || ''
-                console.error(`Une erreur s'est produite :${error.response.data}`)
-                if (msg.includes('Invalid login credentials')) {
-                    errorMsg.value = "Les identifiants fournis ne correspondent pas à nos enregistrements."
-                }
-                else if (msg.includes('Email not found')) {
-                    errorMsg.value = "Cet email n'est associé à aucun compte"
-                }
-                else if (msg.includes('Your email is not verified')) {
-                    errorMsg.value = "Veuillez vérifier votre adresse e-mail"
-                }
-                else if (msg.includes('Email not confirmed')) {
-                    errorMsg.value = "Veuillez vérifier votre adresse e-mail"
-                }
-                else {
-                    errorMsg.value = "Une erreur s'est produite lors de la connexion"
-                }
-                throw new Error(msg || 'Erreur inconnue')
-            }
-            else {
-                console.error(`Une erreur s'est produite :${error.message}`)
-            }
-        }
-        finally {
-            isLoading.value = false
-        }
+    const handleSubmit = async (email: string, password: string) => {
+        console.log("ogging")
+        const response = await signInUser(email, password)
+        console.log('Login success:', response)
+        /* Stockage dans le local storage du navigateur */
+        const sessionData = {
+            access_token: response.data.session.access_token,
+            token_type: response.data.session.token_type,
+            refresh_token: response.data.session.refresh_token,
+            email: response.data.session.email,
+        };
+        localStorage.setItem('session', JSON.stringify(sessionData));
     }
 
 </script>
