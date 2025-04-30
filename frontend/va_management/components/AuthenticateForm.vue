@@ -92,7 +92,7 @@
         }
         catch (error) {
             console.error(`Une erreur s'est produite :${error}`)
-            errorMsg.value = "Error lors du login, verifier vos inputs."
+            errorMsg.value = "Une erreur est survenue, verifier vos inputs."
         }
         finally {
             isLoading.value = false
