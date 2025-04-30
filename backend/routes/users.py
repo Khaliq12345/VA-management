@@ -10,6 +10,7 @@ from backend.services.airtable_service import (
     get_va_aritables,
 )
 from itertools import cycle
+from datetime import datetime
 
 router = APIRouter(
     prefix="",
@@ -85,7 +86,7 @@ async def save_interaction(
     request: Request,
     response: Response,
     creator_ig_username: str,
-    user_id: str,
+    username: str,
     creator_username: str,
 ):
     # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
@@ -95,7 +96,7 @@ async def save_interaction(
     try:
         # Update and Insert in Supabase
         await save_interaction_supabase(
-            session["supabase"], creator_ig_username, user_id, creator_username
+            session["supabase"], creator_ig_username, username, creator_username
         )
         return {"message": "Success !"}
 
