@@ -6,6 +6,7 @@
         >
             REGISTER
         </div>
+        {{ email }}
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
             <form @submit.prevent class="w-full">
                 <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
@@ -44,7 +45,7 @@
                     <UButton
                         variant="ghost"
                         type="submit"
-                        @click="onSubmit"
+                        @click="authSubmit"
                         class="tracking-widest font-light cursor-pointer"
                         v-bind:disabled="isLoading || !canSubmitForm"
                     >
@@ -65,34 +66,36 @@
 
 <script setup lang="ts">
 
-
-    // Ce que Euvince avait fait
-
-    /* defineProps<{
-        mode: 'sign-in' | 'sign-up'
-        email: string
-        password: string
-        signUpApiKey: string | undefined
-        canSubmitForm: boolean
-        isLoading: boolean
-        errorMsg: string | null
-        onSubmit: () => void
-    }>() */
-
-
-    // Ce que Mr Khaliq propose
-
     const email: Ref<string> = ref('')
     const password: Ref<string> = ref('')
     const signUpApiKey: Ref<string> = ref('')
     const isLoading: Ref<boolean> = ref(false)
     const errorMsg: Ref<string | null> = ref('')
-    const canSubmitForm: Ref<boolean> = ref(false)
+    //const canSubmitForm: Ref<boolean> = ref(false)
 
-    defineProps<{
+    // /* Vérification de soumission du formulaire */
+    const canSubmitForm = computed(() => !!email.value && !!password.value)
+
+    const props = defineProps<{
         mode: 'sign-in' | 'sign-up'
-        onSubmit: () => void
+        onSubmit: Function
     }>()
+
+    async function authSubmit() {
+        const router = useRouter()
+        if (!email.value || !password.value) {
+            errorMsg.value = "Veuillez remplir tous les champs"
+            return
+        }
+        try {
+            console.log('First', email.value, password.value, props.mode)
+            const response = await props.onSubmit(email.value, password.value)
+            router.push('/')
+        } catch (error) {
+            console.error(`Une erreur s'est produite :${error}`)
+            errorMsg.value = "Error lors du login, verifier vos inputs"
+        }
+    }
 
 </script>
 
