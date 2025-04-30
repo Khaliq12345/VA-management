@@ -10,7 +10,6 @@ from backend.services.airtable_service import (
     get_va_aritables,
 )
 from itertools import cycle
-from datetime import datetime
 
 router = APIRouter(
     prefix="",
