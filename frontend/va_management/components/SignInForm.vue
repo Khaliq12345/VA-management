@@ -12,6 +12,7 @@
 
     /* Fonction de traitement pour authentifier un user */
     const handleSubmit = async (email: string, password: string) => {
+        const router = useRouter()
         const response = await signInUser(email, password)
         console.log('Login success:', response)
         /* Stockage dans le local storage du navigateur */
@@ -22,6 +23,7 @@
             email: response.data.session.email,
         };
         localStorage.setItem('session', JSON.stringify(sessionData));
+        router.push('/')
     }
 
 </script>

@@ -6,7 +6,6 @@
         >
             REGISTER
         </div>
-        {{ email }}
         <div class="bg-white p-8 w-96 flex items-center justify-center left-block">
             <form @submit.prevent class="w-full">
                 <div v-if="errorMsg" class="errorMsg"><strong>{{ errorMsg }}</strong></div>
@@ -71,7 +70,6 @@
     const signUpApiKey: Ref<string> = ref('')
     const isLoading: Ref<boolean> = ref(false)
     const errorMsg: Ref<string | null> = ref('')
-    //const canSubmitForm: Ref<boolean> = ref(false)
 
     // /* Vérification de soumission du formulaire */
     const canSubmitForm = computed(() => !!email.value && !!password.value)
@@ -81,19 +79,23 @@
         onSubmit: Function
     }>()
 
+    /* Fonction de soumission du formulaire */
     async function authSubmit() {
-        const router = useRouter()
         if (!email.value || !password.value) {
             errorMsg.value = "Veuillez remplir tous les champs"
             return
         }
         try {
+            isLoading.value = true
             console.log('First', email.value, password.value, props.mode)
-            const response = await props.onSubmit(email.value, password.value)
-            router.push('/')
-        } catch (error) {
+            await props.onSubmit(email.value, password.value, signUpApiKey.value)
+        }
+        catch (error) {
             console.error(`Une erreur s'est produite :${error}`)
-            errorMsg.value = "Error lors du login, verifier vos inputs"
+            errorMsg.value = "Error lors du login, verifier vos inputs."
+        }
+        finally {
+            isLoading.value = false
         }
     }
 
