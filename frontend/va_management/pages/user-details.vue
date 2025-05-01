@@ -1,86 +1,14 @@
 <script lang="ts" setup>
 import Loading from '../components/Loading.vue';
-import axios from 'axios';
+import { useUserDetailsFunctions } from '~/composables/useUserDetailsFunctions';
 
-const route = useRoute()
-const userId = ref()
-const user = ref()
-const error = ref("")
-const loadingData = ref(false);
-// 
-const access_token = 'eyJhbGciOiJIUzI1NiIsImtpZCI6ImdYMko4SzNjQ2JOd3pTSjAiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3F3bW9rbXZvaWN6YnhlcXZxY2NtLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI3OTBjZmU1NC1hODY3LTRiZmMtOTg2Yy1iM2FmNjRjODc1YzQiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzQ1NzcwNjE2LCJpYXQiOjE3NDU3NjcwMTYsImVtYWlsIjoidGVzdEBnbWFpbC5jb20iLCJwaG9uZSI6IiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTc0NTc2NzAxNn1dLCJzZXNzaW9uX2lkIjoiYWY4MTE2MTEtNTZmOS00YTllLTg2NGMtZjBiMTNlODQ4NmY3IiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.DSFBpkSijLAYorphzxn82PAlA9pJvGE8dmwo-eRunlM';
-const refresh_token = 'n2ofvgsfdajk';
-onMounted(async () => {
-    user.value = JSON.parse(route.query.user as string);
-    console.log("user : ", user);
-    await beforeRouteEnter(route, {});
-    loadingData.value = true
-    setTimeout(() => {
-        loadingData.value = false
-    }, 5000)
-})
-
-const beforeRouteEnter = async (to: any, from: any) => {
-    console.log('beforeRouteEnter -- status :', user.value.scraped_user.status);
-    // 
-    if (user.value.scraped_user.status == "active") {
-        return null;
-    }
-    userId.value = to.query.id as string;
-    console.log("User ID : ", userId)
-    if (!userId) {
-        error.value = "ID utilisateur manquant";
-        return null;
-    }
-    loadingData.value = true;
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/update-scraped-user-status', {
-            params: {
-                username: userId.value,
-                status: "active",
-            },
-            headers: {
-                access_token: access_token, refresh_token: refresh_token,
-            }
-        });
-        console.log('Update Status :', response.data);
-        return response.data.records;
-    } catch (err) {
-        console.error('Error:', err);
-        return null;
-    } finally {
-        loadingData.value = false;
-    }
-};
-
-const beforeRouteLeave = async (to: any, from: any) => {
-    console.log('beforeRouteLeave');
-    loadingData.value = true;
-    try {
-        const response = await axios.get('http://127.0.0.1:8000/update-scraped-user-status', {
-            params: {
-                username: userId.value,
-                status: "not active",
-            },
-            headers: { access_token: access_token, refresh_token: refresh_token, }
-        });
-        console.log('Update Status :', response.data);
-        return response.data.records;
-    } catch (err) {
-        console.error('Error:', err);
-        return null;
-    } finally {
-        loadingData.value = false;
-    }
-};
-
-const beforeRouteLeaveGuard = (to: any, from: any) => {
-    return beforeRouteLeave(to, from);
-};
-// Enregistrement du garde de navigation beforeRouteLeave
-onBeforeRouteLeave(beforeRouteLeaveGuard);
-
-
+const
+    {
+        user,
+        error,
+        loadingData,
+        saveInteraction
+    } = useUserDetailsFunctions();
 </script>
 
 <template>
@@ -144,17 +72,23 @@ onBeforeRouteLeave(beforeRouteLeaveGuard);
                                 <a :href="user.scraped_user.ig_url" target="_blank">
                                     <UButton :disabled="user.scraped_user.status == 'active'" label="Visit to Interact"
                                         target="_blank"
-                                        class="px-12 bg-primary-400 disabled:bg-primary-200 hover:bg-primary-300"
+                                        class="px-12 bg-warning-400 disabled:bg-warning-200 hover:bg-warning-300"
                                         icon="i-heroicons-eye" />
                                 </a>
                             </div>
 
-                            <UAlert title="Once you're done, just leave this page" color="warning" variant="outline"
-                                class="mt-8 mb-4 " :close="{
+                            <UAlert title="Once you're done, just click on the 'Done' button and leave this page"
+                                color="warning" variant="outline" class="mt-8 mb-4 " :close="{
                                     color: 'white',
                                 }" close-icon="i-heroicons-x-mark" icon="i-heroicons-exclamation-triangle" :ui="{
                                     icon: 'size-5'
                                 }" />
+
+                            <div class="mt-3 flex justify-center gap-x-8">
+                                <UButton :loading="loadingData" :disabled="user.scraped_user.status == 'active'" label=" ~ Done ~ " @click="saveInteraction()"
+                                    class="px-12 bg-primary-400 disabled:bg-primary-200 hover:bg-primary-300"
+                                    icon="i-heroicons-shield-check" />
+                            </div>
                         </div>
                         <div v-else-if="error">
                             <p>Erreur: {{ error }}</p>
