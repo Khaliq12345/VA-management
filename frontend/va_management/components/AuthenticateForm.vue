@@ -90,9 +90,18 @@
             console.log('First', email.value, password.value, props.mode)
             await props.onSubmit(email.value, password.value, signUpApiKey.value)
         }
-        catch (error) {
+        catch (error: any) {
+            if (error.response) {
+                const msg = error.response.data?.message || error.response.data?.error || error.response.data?.detail || ''
+                // Vérifier le mode aussi normalement
+                if (msg.includes("Password should be at least 6 characters.")) {
+                    errorMsg.value = "Le mot de passe doit contenir au moins 6 caractères"
+                }
+                else {
+                    errorMsg.value = "Une erreur est survenue, verifier vos inputs."
+                }
+            }
             console.error(`Une erreur s'est produite :${error}`)
-            errorMsg.value = "Une erreur est survenue, verifier vos inputs."
         }
         finally {
             isLoading.value = false
