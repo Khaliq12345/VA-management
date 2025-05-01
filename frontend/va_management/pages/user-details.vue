@@ -1,3 +1,16 @@
+<script lang="ts" setup>
+import Loading from '../components/Loading.vue';
+import { useUserDetailsFunctions } from '~/composables/useUserDetailsFunctions';
+
+const
+    {
+        user,
+        error,
+        loadingData,
+        saveInteraction
+    } = useUserDetailsFunctions();
+</script>
+
 <template>
     <div class="min-h-screen  bg-gradient-to-br from-gray-50 to-gray-100  flex">
 
@@ -86,15 +99,3 @@
         </div>
     </div>
 </template>
-<script lang="ts" setup>
-import Loading from '../components/Loading.vue';
-import { useUserDetailsFunctions } from '~/composables/useUserDetailsFunctions';
-
-const
-    {
-        user,
-        error,
-        loadingData,
-        saveInteraction
-    } = useUserDetailsFunctions();
-</script>

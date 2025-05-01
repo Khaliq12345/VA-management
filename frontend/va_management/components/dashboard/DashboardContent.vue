@@ -1,3 +1,16 @@
+<script setup lang="ts">
+  import UserCard from './UserCard.vue';
+  const props = defineProps({
+    activeCreator: {
+      type: Object,
+    },
+    users: {
+      type: Object,
+    },
+    canWork: Boolean
+  });
+</script>
+
 <template>
     <div class="mt-8">
       <div v-if="activeCreator" class="">
@@ -11,19 +24,6 @@
       
     </div>
 </template>
-
-<script setup lang="ts">
-  import UserCard from './UserCard.vue';
-  const props = defineProps({
-    activeCreator: {
-      type: Object,
-    },
-    users: {
-      type: Object,
-    },
-    canWork: Boolean
-  });
-</script>
   
 
   
