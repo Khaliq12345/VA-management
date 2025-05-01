@@ -1,32 +1,3 @@
-<script setup lang="ts">
-import DashboardSidebar from '../components/dashboard/DashboardSidebar.vue'
-import DashboardContent from '../components/dashboard/DashboardContent.vue'
-import Loading from '../components/Loading.vue'
-import { useDashBoardFunctions } from '~/composables/useDashBoardFunctions'
-import { useBreakpoints } from '@vueuse/core'
-
-const { loggedInUser } = useAuth()
-
-const {
-  loadingData,
-  isMobileSidebarOpen,
-  users,
-  creators,
-  activeCreator,
-  handleMenuItemClick,
-} = useDashBoardFunctions()
-
-const breakpoints = useBreakpoints({
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-  '2xl': 1536
-})
-
-const isDesktop = breakpoints.greaterOrEqual('md')
-</script>
-
 <template>
   <div class="min-h-screen flex">
     <!-- Desktop Sidebar -->
@@ -103,7 +74,8 @@ const isDesktop = breakpoints.greaterOrEqual('md')
       </main>
 
       <!-- Mobile Drawer Sidebar -->
-      <UDrawer direction="left" inset v-model:open="isMobileSidebarOpen" class="w-10/12 sm:w-6/12">
+       
+      <UDrawer direction="left"  v-model:open="isMobileSidebarOpen" class="w-10/12 sm:w-6/12" :inert="!isMobileSidebarOpen">
         <template #title>
         </template>
         <template #description>
@@ -120,3 +92,32 @@ const isDesktop = breakpoints.greaterOrEqual('md')
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import DashboardSidebar from '../components/dashboard/DashboardSidebar.vue'
+import DashboardContent from '../components/dashboard/DashboardContent.vue'
+import Loading from '../components/Loading.vue'
+import { useDashBoardFunctions } from '~/composables/useDashBoardFunctions'
+import { useBreakpoints } from '@vueuse/core'
+
+const { loggedInUser } = useAuth()
+
+const {
+  loadingData,
+  isMobileSidebarOpen,
+  users,
+  creators,
+  activeCreator,
+  handleMenuItemClick,
+} = useDashBoardFunctions()
+
+const breakpoints = useBreakpoints({
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536
+})
+
+const isDesktop = breakpoints.greaterOrEqual('md')
+</script>

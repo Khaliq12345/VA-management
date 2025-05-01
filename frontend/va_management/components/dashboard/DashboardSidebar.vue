@@ -1,31 +1,3 @@
-<!-- DashboardSidebar.vue -->
-<script setup lang="ts">
-import { useBreakpoints } from '@vueuse/core'
-
-const props = defineProps({
-  creators: {
-    type: Object,
-    required: true
-  },
-  activeCreator: {
-    type: Object,
-    default: () => ({})
-  },
-})
-
-const emit = defineEmits(['menu-item-clicked', 'close-sidebar'])
-
-const breakpoints = useBreakpoints({
-  sm: 640,
-  md: 768,
-  lg: 1024,
-  xl: 1280,
-  '2xl': 1536
-})
-
-const isMobile = breakpoints.smaller('md')
-</script>
-
 <template>
   <div class="flex flex-col p-4 md:bg-gray-100 w-full md:w-4/12 lg:w-3/12">
     <div class="flex justify-between items-center mb-4">
@@ -69,3 +41,29 @@ const isMobile = breakpoints.smaller('md')
     </nav>
   </div>
 </template>
+<script setup lang="ts">
+import { useBreakpoints } from '@vueuse/core'
+
+const props = defineProps({
+  creators: {
+    type: Object,
+    required: true
+  },
+  activeCreator: {
+    type: Object,
+    default: () => ({})
+  },
+})
+
+const emit = defineEmits(['menu-item-clicked', 'close-sidebar'])
+
+const breakpoints = useBreakpoints({
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  '2xl': 1536
+})
+
+const isMobile = breakpoints.smaller('md')
+</script>
