@@ -1,6 +1,7 @@
 
 export function useUserDetailsFunctions() {
     const route = useRoute()
+    const router = useRouter()
     const userId = ref()
     const user = ref()
     const error = ref("")
@@ -16,6 +17,13 @@ export function useUserDetailsFunctions() {
         user.value = userInfos.value
         await beforeRouteEnter(route, {});
     })
+    // 
+    function goBack() {
+        // Return to previous page
+        const returnPath = route.query.from?.toString() || '/dashboard'
+        router.push(returnPath)
+    }
+    //   
     
     const beforeRouteEnter = async (to: any, from: any) => {
         if (user.value.scraped_user.status == "active") {
@@ -30,7 +38,7 @@ export function useUserDetailsFunctions() {
         loadingData.value = true;
         try {
             let data = {
-                username: userId.value,
+                user_id: userId.value,
                     status: "active",
             };
             let headers = {
@@ -51,7 +59,7 @@ export function useUserDetailsFunctions() {
         loadingData.value = true;
         try {
             let data = {
-                username: userId.value,
+                user_id: userId.value,
                     status: "not active",
             };
             let headers = {
@@ -71,7 +79,7 @@ export function useUserDetailsFunctions() {
         loadingData.value = true;
         try {
             let data = {
-                username: user.value.scraped_user.user_id,
+                user_id: user.value.scraped_user.user_id,
                 creator_ig_username: user.value.ig_username,
                 creator_username: user.value.creator_name,
             };
@@ -81,9 +89,10 @@ export function useUserDetailsFunctions() {
             }
             var response = await saveUserInteraction(data, headers);
             console.log('Save Interaction :', response);
-            navigateTo({
-                path: '/dashboard',
-              });
+            // navigateTo({
+            //     path: '/dashboard',
+            //   });
+            goBack()
         } catch (err) {
             console.error('Error:', err);
         } finally {
@@ -100,6 +109,7 @@ export function useUserDetailsFunctions() {
         user,
         error,
         loadingData,
-        saveInteraction
+        saveInteraction,
+        goBack
     };
 }

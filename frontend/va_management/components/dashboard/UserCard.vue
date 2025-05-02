@@ -1,5 +1,7 @@
 
 <script setup lang="ts">
+const route = useRoute()
+
 const {
     userInfos,
     updateUserInfos,
@@ -20,7 +22,7 @@ function goToUserDetails() {
   updateUserInfos(props.user);
   navigateTo({
     path: '/user-details',
-    query: { id: props.user.scraped_user.username }, 
+    query: {from: route.fullPath, id: props.user.scraped_user.user_id }, 
   });
 }
 

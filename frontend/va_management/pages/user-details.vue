@@ -7,7 +7,8 @@ const
         user,
         error,
         loadingData,
-        saveInteraction
+        saveInteraction,
+        goBack
     } = useUserDetailsFunctions();
 </script>
 
@@ -20,12 +21,12 @@ const
                     <h3 class="ml-3 text-xl font-bold text-center ">DashBoard ~ Details</h3>
                     <!-- LogOut -->
                     <div class="text-end">
-                        <ULink to="/dashboard" class="">
-                            <UButton variant="ghost" icon="i-heroicons-arrow-uturn-left" @click=""
+                        <!-- <ULink to="/dashboard" class=""> -->
+                            <UButton variant="ghost" icon="i-heroicons-arrow-uturn-left" @click="goBack"
                                 class=" cursor-pointer">
                                 Back
                             </UButton>
-                        </ULink>
+                        <!-- </ULink> -->
                         <UButton color="secondary" variant="ghost" icon="i-heroicons-arrow-left-end-on-rectangle"
                             class="text-error-500  hover:bg-gray-100 cursor-pointer">
                             Log Out

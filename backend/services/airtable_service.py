@@ -146,5 +146,5 @@ async def get_va_aritables(
 if __name__ == "__main__":
     import asyncio
 
-    username = "john_christopher_villamin"
-    asyncio.run(get_va_aritables(username))
+    email = "john_christopher_villamin"
+    asyncio.run(get_va_aritables(email))
