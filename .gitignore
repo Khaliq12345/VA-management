@@ -22,3 +22,19 @@ logs
 .env
 .env.*
 !.env.example
+
+# backend
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.ipynb
+.DS_Store
+.env.dev
+
+
+read.md
+packages.txt
+tests.py
+env/
