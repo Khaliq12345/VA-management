@@ -11,10 +11,8 @@ from backend.services.airtable_service import (
 )
 from itertools import cycle
 
-router = APIRouter(
-    prefix="",
-    responses={404: {"description": "Not found"}},
-)
+
+router = APIRouter(prefix="", responses={404: {"description": "Not found"}})
 
 
 @router.get("/get-scraped-users", response_model=List[Dict])
