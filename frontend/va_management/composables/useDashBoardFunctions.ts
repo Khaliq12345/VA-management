@@ -48,7 +48,7 @@ function goToPrevPage() {
       path: route.path,
       query: {creator: route.query.creator, page: currentPage.value - 1 }
     })
-    loadUsers()
+    // loadUsers()
   }
 }
 
@@ -57,10 +57,11 @@ function goToNextPage() {
     path: route.path,
     query: {creator: route.query.creator, page: currentPage.value + 1 }
   })
-  loadUsers()
+//   loadUsers()
 }
 
 async function loadUsers() {
+    console.log("Current page : ", currentPage.value)
         loadingData.value = true;
         try {
             let data = {
@@ -86,7 +87,7 @@ async function loadUsers() {
         isMobileSidebarOpen.value = false;
 }
 
-// watch(() => route.query.page, loadUsers)
+watch(() => route.query.page, loadUsers)
 
     return {
 currentPage,
