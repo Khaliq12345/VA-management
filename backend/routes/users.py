@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from typing import List, Dict, Annotated
+from typing import Dict, Annotated
 from backend.dependencies.supabase_depency import get_supabase_from_headers, AsyncClient
 from backend.services.supabase_service import (
     get_scraped_users_from_supabase,
@@ -15,7 +15,7 @@ from itertools import cycle
 router = APIRouter(prefix="", responses={404: {"description": "Not found"}})
 
 
-@router.get("/get-scraped-users", response_model=List[Dict])
+@router.get("/get-scraped-users", response_model=dict)
 async def get_users(
     session: Annotated[dict, Depends(get_supabase_from_headers)],
     request: Request,
@@ -25,6 +25,7 @@ async def get_users(
     base_id: str,
     limit: int = 20,
     offset: int = 0,
+    airtable_offset: str | None = None,
 ):
     # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
     response.headers["access_token"] = session["access_token"]
@@ -38,14 +39,17 @@ async def get_users(
             limit=limit,
             offset=offset,
         )
+        if not scraped_users:
+            return {"results": [], "airtable_offset": None}
 
         # # Récupérer les informations de l'API Airtable
         # table_id, base_id = await get_va_info(session["supabase"], va_id)
         (
             ig_usernames,
             creator_usernames,
+            airtable_offset,
         ) = await get_creators_info_from_airtable(
-            creator_username, table_id, base_id, limit, offset
+            creator_username, table_id, base_id, limit, airtable_offset
         )
 
         # Assign each scraped user to a creator account
@@ -71,7 +75,7 @@ async def get_users(
                     }
                 )
 
-        return results
+        return {"results": results, "airtable_offset": airtable_offset}
 
     except Exception as e:
         raise HTTPException(500, detail=str(e))
@@ -145,3 +149,8 @@ async def update_scraped_user(
 
     except Exception as e:
         raise HTTPException(500, detail=str(e))
+
+
+@router.get("/hello")
+async def send_hello():
+    return {"detail": "Hello"}
