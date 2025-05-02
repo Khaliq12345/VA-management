@@ -1,10 +1,12 @@
 <script setup>
 import Loading from '../components/Loading.vue';
+
 const router = useRouter();
 onMounted(async () => {
   router.push('/dashboard');
 });
 </script>
+
 <template>
   <div class="w-full h-100 flex flex-col align-middle justify-center items-center">
     <Loading />

@@ -29,11 +29,11 @@ app.add_middleware(
 )
 
 # Routes
-app.include_router(auth_router, tags=["Authentication"])
-app.include_router(users_router, tags=["Scraped Users"])
+app.include_router(prefix="/api", router=auth_router, tags=["Authentication"])
+app.include_router(prefix="/api", router=users_router, tags=["Scraped Users"])
 
 
-@app.post("/webhook")
+@app.post("/api/webhook")
 async def receive_webhook(request: Request):
     json_data = await request.json()
     print(json_data)

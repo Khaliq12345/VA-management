@@ -73,16 +73,18 @@ async def update_datetime(
 
 
 async def get_creators_info_from_airtable(
-    creator_name, table_id, base_id, limit=20, offset=0
+    creator_name, table_id, base_id, limit=20, offset=None
 ):
     # Get all records with pagination
     url = f"{AIRTABLE_API_URL}/{base_id}/{table_id}"
     params = {"pageSize": limit}
-    params["offset"] = offset
+    if offset:
+        params["offset"] = offset
 
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=HEADERS, params=params)
         response.raise_for_status()
+        offset = response.json().get("offset", None)
         records = response.json().get("records", [])
 
     creators_usernames = []
@@ -92,7 +94,7 @@ async def get_creators_info_from_airtable(
         creators_usernames.append(creator_name)
         instagram_usernames.append(fields.get("Instagram Username"))
 
-    return instagram_usernames, creators_usernames
+    return instagram_usernames, creators_usernames, offset
 
 
 def check_if_record_is_in_time_shift(

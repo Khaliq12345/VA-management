@@ -10,7 +10,7 @@ def handle_changes(payload: dict):
         "content-type": "application/json",
     }
     httpx.post(
-        "http://127.0.0.1:8000/webhook",
+        "http://127.0.0.1:8000/api/webhook",
         headers=headers,
         json=payload,
     )
@@ -34,7 +34,7 @@ async def get_scraped_users_from_supabase(
     # Définir la date limite de 30 jours
     today = datetime.now(timezone.utc)
     thirty_days_ago = today - timedelta(days=30)
-    
+
     print(f" thirty_days_ago ---> {thirty_days_ago}")
 
     # Récupérer les utilisateurs scrapés inactifs ou sans last_action
