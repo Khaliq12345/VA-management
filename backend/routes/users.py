@@ -85,7 +85,7 @@ async def save_interaction(
     request: Request,
     response: Response,
     creator_ig_username: str,
-    username: str,
+    user_id: str,
     creator_username: str,
 ):
     # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
@@ -95,7 +95,7 @@ async def save_interaction(
     try:
         # Update and Insert in Supabase
         await save_interaction_supabase(
-            session["supabase"], creator_ig_username, username, creator_username
+            session["supabase"], creator_ig_username, user_id, creator_username
         )
         return {"message": "Success !"}
 
@@ -128,7 +128,7 @@ async def update_scraped_user(
     session: Annotated[dict, Depends(get_supabase_from_headers)],
     request: Request,
     response: Response,
-    username: str,
+    user_id: str,
     status: str,
 ):
     # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
@@ -140,7 +140,7 @@ async def update_scraped_user(
         await (
             supabase.table("scraped_users")
             .update({"status": status})
-            .eq("username", username)
+            .eq("user_id", user_id)
             .execute()
         )
         return {"message": "success"}

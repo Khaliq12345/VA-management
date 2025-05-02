@@ -9,6 +9,8 @@ async def get_scraped_users_from_supabase(
     # Définir la date limite de 30 jours
     today = datetime.now(timezone.utc)
     thirty_days_ago = today - timedelta(days=30)
+    
+    print(f" thirty_days_ago ---> {thirty_days_ago}")
 
     # Récupérer les utilisateurs scrapés inactifs ou sans last_action
     condition = f"last_action.is.null,last_action.lt.{thirty_days_ago.isoformat()}"
