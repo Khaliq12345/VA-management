@@ -145,6 +145,20 @@ async def get_va_aritables(
         return records
 
 
+async def get_va_info_from_airtable(email: str):
+    # Get va information
+    url = f"{AIRTABLE_API_URL}/{config.VA_INFO_BASE_ID}/{config.VA_INFO_TABLE_ID}"
+    params = {
+        "filterByFormula": f"{{Email}}='{email}'",
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=HEADERS, params=params)
+        response.raise_for_status()
+        json_data = response.json()
+        return json_data["records"][0]["fields"]
+
+
 if __name__ == "__main__":
     import asyncio
 

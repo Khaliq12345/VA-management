@@ -8,6 +8,7 @@ from backend.services.supabase_service import (
 from backend.services.airtable_service import (
     get_creators_info_from_airtable,
     get_va_aritables,
+    get_va_info_from_airtable,
 )
 from itertools import cycle
 
@@ -105,8 +106,8 @@ async def save_interaction(
         raise HTTPException(500, detail=str(e))
 
 
-@router.get("/get-va-info", response_model=Dict)
-async def get_va_info_route(
+@router.get("/get-va-airtables", response_model=Dict)
+async def get_va_airtables_route(
     session: Annotated[dict, Depends(get_supabase_from_headers)],
     request: Request,
     response: Response,
@@ -151,6 +152,17 @@ async def update_scraped_user(
         raise HTTPException(500, detail=str(e))
 
 
-@router.get("/hello")
-async def send_hello():
-    return {"detail": "Hello"}
+@router.get("/get-va-info", response_model=Dict)
+async def get_va_info_routes(
+    session: Annotated[dict, Depends(get_supabase_from_headers)],
+    response: Response,
+    request: Request,
+    email: str,
+):
+    # Renvoyer les nouveaux tokens dans la réponse si refresh a eu lieu
+    response.headers["access_token"] = session["access_token"]
+    response.headers["refresh_token"] = session["refresh_token"]
+
+    va_info = await get_va_info_from_airtable(email)
+
+    return va_info

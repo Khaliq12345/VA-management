@@ -1,31 +1,6 @@
-from supabase import AsyncClient, create_async_client
+from supabase import AsyncClient
 from datetime import datetime, timedelta, timezone
 from dateparser import parse
-from config import config
-import httpx
-
-
-def handle_changes(payload: dict):
-    headers = {
-        "content-type": "application/json",
-    }
-    httpx.post(
-        "http://127.0.0.1:8000/api/webhook",
-        headers=headers,
-        json=payload,
-    )
-
-
-async def subscribe_to_channel():
-    supabase = await create_async_client(
-        supabase_url=config.SUPABASE_URL, supabase_key=config.SUPABASE_KEY
-    )
-    await (
-        supabase.channel("room1")
-        .on_postgres_changes("*", schema="*", callback=handle_changes)
-        .subscribe()
-    )
-    print("Subscribed!!")
 
 
 async def get_scraped_users_from_supabase(
