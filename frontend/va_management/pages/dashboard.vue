@@ -4,7 +4,6 @@ import DashboardContent from '../components/dashboard/DashboardContent.vue'
 import PaginationControls from '../components/dashboard/PaginationControls.vue'
 import Loading from '../components/Loading.vue'
 import { useDashBoardFunctions } from '~/composables/useDashBoardFunctions'
-import { useBreakpoints } from '@vueuse/core'
 
 const { loggedInUser } = useAuth()
 

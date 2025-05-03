@@ -9,6 +9,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       urlAPI: process.env.API_URL,
+      supabaseURL: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY,
      },
   },
 })

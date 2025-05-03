@@ -70,7 +70,7 @@ const
                                     }" />
                             </div>
                             <div class="mt-3 flex justify-center gap-x-8">
-                                <a :href="user.scraped_user.ig_url" target="_blank">
+                                <a :href="user.scraped_user.profile_link" target="_blank">
                                     <UButton :disabled="user.scraped_user.status == 'active'" label="Visit to Interact"
                                         target="_blank"
                                         class="px-12 bg-warning-400 disabled:bg-warning-200 hover:bg-warning-300"
