@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     const headers = getRequestHeaders(event);
 
     const params = {
-        email: query.email,
+        va_email: query.va_email,
     }
 
     console.log(params)
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
           params: params,
           headers: headers as AxiosHeaders
         });
-        return response.data;
+        return response.data.records || [];
       } catch (err) {
         console.error('Error:', err);
         return null;

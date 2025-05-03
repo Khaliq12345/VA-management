@@ -18,6 +18,7 @@ const {
   creators,
   activeCreator,
   handleMenuItemClick,
+  handleLogout
 } = useDashBoardFunctions()
 
 </script>
@@ -41,7 +42,7 @@ const {
           </UButton>
 
           <!-- LogOut -->
-          <UButton color="secondary" variant="ghost" icon="i-heroicons-arrow-left-end-on-rectangle"
+          <UButton color="secondary" @click="handleLogout" variant="ghost" icon="i-heroicons-arrow-left-end-on-rectangle"
             class="text-error-500 hover:bg-gray-100 cursor-pointer">
             Log Out
           </UButton>
@@ -55,16 +56,16 @@ const {
           <ClientOnly>
             <div class="flex flex-col ml-4">
               <span class="mr-4 text-2xl mb-3">
-                Welcome, <span class="font-bold"> {{ loggedInUser.name }} </span>!
+                Welcome, <span class="font-bold"> {{ loggedInUser.name }} </span> !
               </span>
               <p class="text-sm">
-                Logged In at: <span class="font-bold">{{ formatTime(loggedInUser.loginTime) }}</span>
+                Logged In at : <span class="font-bold">{{ loggedInUser.loginTime }}</span>
               </p>
-              <p class="text-sm">
-                Shift Time: <span class="font-bold">From --> </span>
-                {{ formatTime(loggedInUser.loginTime) }} --
+              <p class="text-sm my-3">
+                Shift Time : <span class="font-bold">From --> </span>
+                {{ loggedInUser.shiftTimeFrom }} --
                 <span class="font-bold">To --></span>
-                {{ formatTime(loggedInUser.loginTime) }}
+                {{ loggedInUser.shiftTimeTo }}
               </p>
             </div>
             <template #fallback>

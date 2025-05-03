@@ -4,10 +4,10 @@ export function useDashBoardFunctions() {
     // Supabase
     const config = useRuntimeConfig();
     // Create a single supabase client for interacting with your database
-    const supabase = createClient(config.public.supabaseURL, config.public.supabaseKey)
+    const supabase = createClient(config.public.supabaseURL as any, config.public.supabaseKey as any)
 
     //const { fetchVaInfo } = useFetchVaInfos();
-    const { loggedInUser } = useAuth()
+    const { loggedInUser, updateLoggedInUserInfos } = useAuth()
 
     // To Manage Page Loading
     const loadingData = ref(false);
@@ -103,17 +103,8 @@ export function useDashBoardFunctions() {
 
     onMounted(async () => {
         loadingData.value = true;
-        let params = {
-            va_email: loggedInUser.value.email
-        }
-        let headers = {
-            'access_token': loggedInUser.value.access_token,
-            'refresh_token': loggedInUser.value.refresh_token
-        }
-        console.log("param :", params)
-        console.log("headers :", headers)
         try {
-            let data = await $fetch("/api/get-va-info", {
+            let data = await $fetch("/api/get-va-airtables", {
                 params: {
                     va_email: loggedInUser.value.email
                 },
@@ -127,7 +118,7 @@ export function useDashBoardFunctions() {
                 navigateTo('/auth/sign-in')
                 return;
             }
-            creators.value = data
+            creators.value = data as any
         } catch (err) {
             console.error('Errors:', err);
         } finally {
@@ -147,7 +138,6 @@ export function useDashBoardFunctions() {
             // loadUsers()
         }
     }
-
     function goToNextPage() {
         router.push({
             path: route.path,
@@ -155,7 +145,7 @@ export function useDashBoardFunctions() {
         })
         //   loadUsers()
     }
-
+    // Chargement des Users
     async function loadUsers() {
         console.log("Current page : ", currentPage.value)
         loadingData.value = true;
@@ -190,6 +180,19 @@ export function useDashBoardFunctions() {
         }
         isMobileSidebarOpen.value = false;
     }
+    // Logout
+    function handleLogout(){
+        updateLoggedInUserInfos({
+            name: '', 
+            email: '', 
+            loginTime: '',
+            shiftTimeFrom: "",
+            shiftTimeTo: "",
+            access_token: '',    
+            refresh_token: ''
+          })
+        router.push('/auth/sign-in')
+    }
 
     watch(() => route.query.page, loadUsers)
 
@@ -204,5 +207,6 @@ export function useDashBoardFunctions() {
         creators,
         activeCreator,
         handleMenuItemClick,
+        handleLogout
     };
 }
