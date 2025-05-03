@@ -19,9 +19,9 @@ export default defineEventHandler(async (event) => {
           headers: headers
         });
         return response.data.records || [];
-      } catch (err) {
-        console.error('Error:', err);
-        return null;
+    } catch (err) {
+      console.error('Error:', err);
+      return null;
     }
 
 })
