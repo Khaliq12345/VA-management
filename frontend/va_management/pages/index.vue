@@ -3,7 +3,7 @@ import Loading from '../components/Loading.vue';
 
 const router = useRouter();
 onMounted(async () => {
-  router.push('/dashboard');
+  router.push('/auth/sign-in');
 });
 </script>
 

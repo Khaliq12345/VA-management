@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   try {
     const response = await axios.get(urlAPI + event.path, {
       params: params,
-      headers: headers
+      headers: headers as AxiosHeaders
     });
     return response.data
   } catch (err) {

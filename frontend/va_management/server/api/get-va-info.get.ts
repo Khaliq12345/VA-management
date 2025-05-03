@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosHeaders } from "axios";
 
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
     try {
         const response = await axios.get(urlAPI + event.path, {
           params: params,
-          headers: headers
+          headers: headers as AxiosHeaders
         });
         return response.data.records || [];
       } catch (err) {

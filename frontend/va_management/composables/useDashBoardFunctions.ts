@@ -31,7 +31,7 @@ export function useDashBoardFunctions() {
     const currentPage = computed(() => parseInt(route.query.page?.toString() ?? "1") || 1)
     const offset = computed(() => (currentPage.value - 1) * limit)
     const hasNextPage = ref(true)
-
+    // Supabase Handling
     const subscriptionCallback = async (payload: any) => {
         // Only the scraped_users table
         if (payload.table != "scraped_users" || payload.eventType != "UPDATE") {
@@ -78,7 +78,6 @@ export function useDashBoardFunctions() {
             users.value.splice(userIndex, 1); 
         }
     }
-
     const subscribeSupabaseChannel = () => {
         supabase
             .channel('room1')
@@ -87,7 +86,6 @@ export function useDashBoardFunctions() {
 
         console.log("Subscription Complete !")
     }
-
     const handleMenuItemClick = async (item: any) => {
         activeCreator.value = item;
         router.push({
@@ -101,12 +99,21 @@ export function useDashBoardFunctions() {
 
         }
     };
-    // 
+    
 
     onMounted(async () => {
         loadingData.value = true;
+        let params = {
+            va_email: loggedInUser.value.email
+        }
+        let headers = {
+            'access_token': loggedInUser.value.access_token,
+            'refresh_token': loggedInUser.value.refresh_token
+        }
+        console.log("param :", params)
+        console.log("headers :", headers)
         try {
-            creators.value = await $fetch("/api/get-va-info", {
+            let data = await $fetch("/api/get-va-info", {
                 params: {
                     va_email: loggedInUser.value.email
                 },
@@ -115,6 +122,12 @@ export function useDashBoardFunctions() {
                     'refresh_token': loggedInUser.value.refresh_token
                 }
             });
+            console.error('data:', data);
+            if (!data) {
+                navigateTo('/auth/sign-in')
+                return;
+            }
+            creators.value = data
         } catch (err) {
             console.error('Errors:', err);
         } finally {

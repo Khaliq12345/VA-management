@@ -6,6 +6,10 @@ const {
   updateUserInfos,
 } = useUserInfos()
 
+const { loggedInUser } = useAuth()
+
+const loadingData = ref(false);
+
 const props = defineProps({
   user: {
     type: Object,
@@ -17,13 +21,38 @@ function statusColor(status: string) {
   return status == "active" ? 'bg-error-800' : 'bg-success-800';
 }
 
-function goToUserDetails() {
-  updateUserInfos(props.user);
-  navigateTo({
-    path: '/user-details',
-    query: { from: route.fullPath, id: props.user.scraped_user.user_id },
-  });
-}
+// function goToUserDetails() {
+//   updateUserInfos(props.user);
+//   navigateTo({
+//     path: '/user-details',
+//     query: { from: route.fullPath, id: props.user.scraped_user.user_id },
+//   });
+// }
+
+// Interaction
+const saveInteraction = async () => {
+        loadingData.value = true;
+        try {
+            var response = await $fetch("/api/save-interaction", {
+                params: {
+                    user_id: props.user.scraped_user.user_id,
+                    creator_ig_username: props.user.ig_username,
+                    creator_username: props.user.creator_name,
+                },
+                headers: {
+                    'access_token': loggedInUser.value.access_token,
+                    'refresh_token': loggedInUser.value.refresh_token
+                } 
+            });
+            console.log('nteraction Saved :', response);
+            // 
+        } catch (err) {
+            console.error('Errors:', err);
+        } finally {
+            loadingData.value = false;
+        }
+
+    };
 
 </script>
 
@@ -57,7 +86,7 @@ function goToUserDetails() {
         </div>
         <!--  -->
         <div class="my-4  text-center">
-          <UButton :disabled="user.scraped_user.status == 'active'" @click=""
+          <UButton :loading="loadingData" :disabled="user.scraped_user.status == 'active'" @click="saveInteraction"
             class="px-12 w-1/2 justify-center bg-primary-300 disabled:bg-primary-100 hover:bg-primary-200"
             icon="i-heroicons-shield-check"> ~ Done ~ </UButton>
         </div>
