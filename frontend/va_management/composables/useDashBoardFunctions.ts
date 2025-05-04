@@ -7,7 +7,7 @@ export function useDashBoardFunctions() {
     const supabase = createClient(config.public.supabaseURL as any, config.public.supabaseKey as any)
 
     //const { fetchVaInfo } = useFetchVaInfos();
-    const { loggedInUser, updateLoggedInUserInfos } = useAuth()
+    // const { loggedInUser, updateLoggedInUserInfos } = useAuth()
 
     // To Manage Page Loading
     const loadingData = ref(false);
@@ -37,7 +37,7 @@ export function useDashBoardFunctions() {
         if (payload.table != "scraped_users" || payload.eventType != "UPDATE") {
             return;
         }
-        console.log('Change received !', payload)
+        // console.log('Change received !', payload)
         // If the payload.new is on the actual listing
         const userIndex = users.value.findIndex(
             (u: any) => u.scraped_user.id === payload.new.id
@@ -45,12 +45,12 @@ export function useDashBoardFunctions() {
         if (userIndex === -1) {
             return;
         }
-        console.log('1 Matching user payload !', payload.new)
+        // console.log('1 Matching user payload !', payload.new)
         // Update our listing element with it's new value
         users.value[userIndex]['scraped_user'] = payload.new as never;
         // Filter -- and return when the element must still in the listing
-        console.log("last_action == null  : ", payload.new.last_action == null )
-        console.log("more_than_30_days(payload.new.last_action)  : ", more_than_30_days(payload.new.last_action))
+        // console.log("last_action == null  : ", payload.new.last_action == null )
+        // console.log("more_than_30_days(payload.new.last_action)  : ", more_than_30_days(payload.new.last_action))
         // No Last Action
         if (payload.new.last_action == null) {
             return;
@@ -71,7 +71,7 @@ export function useDashBoardFunctions() {
             console.error("Error fetching interactions:", error);
             return;
         }
-        console.log("interaction : ", data)
+        // console.log("interaction : ", data)
         // 
         if (data.length > 0) {
             // remove element
@@ -84,41 +84,39 @@ export function useDashBoardFunctions() {
             .on('postgres_changes', { event: '*', schema: '*' }, subscriptionCallback)
             .subscribe();
 
-        console.log("Subscription Complete !")
+        // console.log("Subscription Complete !")
     }
     const handleMenuItemClick = async (item: any) => {
         activeCreator.value = item;
         router.push({
             path: route.path,
-            query: { creator: activeCreator.value['Model Assigned'], page: currentPage.value }
+            query: { creator: activeCreator.value['Model Assigned'], page: "1"}
         })
+        airtableOffset.value = null
         await loadUsers();
-        //  
-        if (users.value.length > 0) {
-            subscribeSupabaseChannel()
-
-        }
     };
     
 
     onMounted(async () => {
         loadingData.value = true;
         try {
-            let data = await $fetch("/api/get-va-airtables", {
+            let  headers = {
+                'access_token': localStorage.getItem('access_token'),
+                'refresh_token': localStorage.getItem('refresh_token')
+            }
+            // console.log("headers : ", headers)
+            let response = await $fetch("/api/get-va-airtables", {
                 params: {
-                    va_email: loggedInUser.value.email
+                    va_email: localStorage.getItem('email')
                 },
-                headers: {
-                    'access_token': loggedInUser.value.access_token,
-                    'refresh_token': loggedInUser.value.refresh_token
-                }
-            });
-            console.error('data:', data);
-            if (!data) {
+               headers : headers as any
+            }) as any;
+            console.log('response status : ', response['status']);
+            if (response['status'] == 401) {
                 navigateTo('/auth/sign-in')
                 return;
             }
-            creators.value = data as any
+            creators.value = response['records']
         } catch (err) {
             console.error('Errors:', err);
         } finally {
@@ -147,7 +145,7 @@ export function useDashBoardFunctions() {
     }
     // Chargement des Users
     async function loadUsers() {
-        console.log("Current page : ", currentPage.value)
+        // console.log("Current page : ", currentPage.value)
         loadingData.value = true;
         try {
             let params = {
@@ -159,20 +157,27 @@ export function useDashBoardFunctions() {
                 airtable_offset: airtableOffset.value
             };
             let headers = {
-                'access_token': loggedInUser.value.access_token,
-                'refresh_token': loggedInUser.value.refresh_token
+                'access_token': localStorage.getItem('access_token'),
+                'refresh_token': localStorage.getItem('refresh_token')
             }
+            // console.log(params)
+            // console.log(headers)
             const data = await $fetch('/api/get-scraped-users', {
-                headers: headers,
+                headers: headers as any,
                 params: params,
             })
-            console.log("Got Users :", data)
+            // console.log("Got Users :", data)
 
             users.value = data.results
             airtableOffset.value = data.airtable_offset
 
             // Si on reçoit moins d'utilisateurs que le limit, c'est qu'on est à la dernière page
             hasNextPage.value = users.value.length === limit
+
+            // supabase Subscription
+            if (users.value.length > 0) {
+                subscribeSupabaseChannel()
+            }
         } catch (err) {
             console.error('Error:', err);
         } finally {
@@ -182,15 +187,8 @@ export function useDashBoardFunctions() {
     }
     // Logout
     function handleLogout(){
-        updateLoggedInUserInfos({
-            name: '', 
-            email: '', 
-            loginTime: '',
-            shiftTimeFrom: "",
-            shiftTimeTo: "",
-            access_token: '',    
-            refresh_token: ''
-          })
+       localStorage.removeItem('access_token')
+                localStorage.removeItem('refresh_token')
         router.push('/auth/sign-in')
     }
 

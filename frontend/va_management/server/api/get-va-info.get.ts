@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
         email: query.email,
     }
 
-    console.log(params)
+    // console.log(params)
 
     const config = useRuntimeConfig();
     const urlAPI = config.public.urlAPI;

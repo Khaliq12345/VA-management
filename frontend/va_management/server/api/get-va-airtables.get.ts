@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
         va_email: query.va_email,
     }
 
-    console.log(params)
+    // console.log(params)
 
     const config = useRuntimeConfig();
     const urlAPI = config.public.urlAPI;
@@ -18,10 +18,16 @@ export default defineEventHandler(async (event) => {
           params: params,
           headers: headers as AxiosHeaders
         });
-        return response.data.records || [];
-      } catch (err) {
+        return {
+          'status' : response.status,
+          'records' : response.data.records || []
+        };
+      } catch (err: any) {
         console.error('Error:', err);
-        return null;
+        return  {
+          'status' : err?.response?.status,
+          'records' : null
+        };;
     }
 
 })

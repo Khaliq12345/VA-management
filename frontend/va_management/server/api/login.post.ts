@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
     password: query.password,
   };
 
+
   try {
     const response = await axios.post(urlAPI + event.path, null, {
       params: params, // 
@@ -19,6 +20,8 @@ export default defineEventHandler(async (event) => {
     });
 
     return response.data; // 
+
+
   } catch (err: any) {
     console.error("Erreur lors de l'appel à l'API distante :", err?.message);
     return createError({

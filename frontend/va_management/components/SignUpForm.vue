@@ -7,7 +7,7 @@
 const handleSubmit = async (email: string, password: string, signUpApiKey: string) => {
     const router = useRouter()
     try {
-        console.log(signUpApiKey)
+        // console.log(signUpApiKey)
         const response = await $fetch('/api/signup', {
             method: 'POST',
             headers: {
@@ -19,7 +19,7 @@ const handleSubmit = async (email: string, password: string, signUpApiKey: strin
                 password: password,
             },
         })
-        console.log('Register success:', response)
+        // console.log('Register success:', response)
         router.push("/auth/sign-in")
     } catch (err: any) {
         console.error('Errors:', err.data);

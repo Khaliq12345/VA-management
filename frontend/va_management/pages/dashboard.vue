@@ -5,7 +5,18 @@ import PaginationControls from '../components/dashboard/PaginationControls.vue'
 import Loading from '../components/Loading.vue'
 import { useDashBoardFunctions } from '~/composables/useDashBoardFunctions'
 
-const { loggedInUser } = useAuth()
+const loggedInUser = ref({}) as any;
+
+
+onMounted(async () => {
+  loggedInUser.value = {
+    name: localStorage.getItem('name'),
+    email: localStorage.getItem('email'),
+    loginTime: localStorage.getItem('loginTime'),
+    shiftTimeFrom: localStorage.getItem('shiftTimeFrom'),
+    shiftTimeTo: localStorage.getItem('shiftTimeTo'),
+  }
+})
 
 const {
   currentPage,
@@ -42,8 +53,8 @@ const {
           </UButton>
 
           <!-- LogOut -->
-          <UButton color="secondary" @click="handleLogout" variant="ghost" icon="i-heroicons-arrow-left-end-on-rectangle"
-            class="text-error-500 hover:bg-gray-100 cursor-pointer">
+          <UButton color="secondary" @click="handleLogout" variant="ghost"
+            icon="i-heroicons-arrow-left-end-on-rectangle" class="text-error-500 hover:bg-gray-100 cursor-pointer">
             Log Out
           </UButton>
         </div>

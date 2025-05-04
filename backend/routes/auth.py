@@ -35,6 +35,7 @@ async def login(
             # "user": response.user
         }
     except Exception as e:
+        print(str(e))
         raise HTTPException(500, detail=str(e))
 
 
