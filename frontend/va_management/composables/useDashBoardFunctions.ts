@@ -172,7 +172,7 @@ export function useDashBoardFunctions() {
             airtableOffset.value = data.airtable_offset
 
             // Si on reçoit moins d'utilisateurs que le limit, c'est qu'on est à la dernière page
-            hasNextPage.value = users.value.length === limit
+            hasNextPage.value = users.value.length !== 0
 
             // supabase Subscription
             if (users.value.length > 0) {
