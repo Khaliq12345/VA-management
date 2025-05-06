@@ -6,6 +6,7 @@ export function formatTime(date: Date): string {
     return `${hours}:${minutes}:${seconds}`;
 }
 
+// verify is more than 30 days ago
 export function more_than_30_days(dateString: string): boolean {
   const date = new Date(dateString);
   const now = new Date();

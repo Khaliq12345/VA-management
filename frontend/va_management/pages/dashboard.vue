@@ -99,6 +99,7 @@ const {
         </div>
       </main>
     </div>
+    
     <!-- Mobile Drawer Sidebar -->
     <UDrawer direction="left" v-model:open="isMobileSidebarOpen" class="w-10/12 sm:w-6/12">
       <template #title>
