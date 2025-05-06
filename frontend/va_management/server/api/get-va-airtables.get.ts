@@ -1,5 +1,3 @@
-import axios, { AxiosHeaders } from "axios";
-
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const headers = getRequestHeaders(event);
@@ -14,14 +12,19 @@ export default defineEventHandler(async (event) => {
     const urlAPI = config.public.urlAPI;
 
     try {
-        const response = await axios.get(urlAPI + event.path, {
-          params: params,
-          headers: headers as AxiosHeaders
-        });
-        return {
-          'status' : response.status,
-          'records' : response.data.records || []
-        };
+      const rawResponse = await $fetch.raw(event.path, {
+        baseURL: urlAPI,
+        method: 'GET',
+        params: params,
+        headers: headers as HeadersInit,
+      }) as any;
+      
+      // console.log(rawResponse); 
+      
+      return {
+        status: rawResponse.status,
+        records: rawResponse._data.records || [],
+      };
       } catch (err: any) {
         console.error('Error:', err);
         return  {

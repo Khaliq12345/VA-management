@@ -1,9 +1,7 @@
-import axios, { AxiosHeaders } from "axios";
-
 export default defineEventHandler(async (event) => {
 
   const query = getQuery(event);
-  const headers = getRequestHeaders(event) as AxiosHeaders;
+  const headers = getRequestHeaders(event);
 
   const params = {
     user_id: query.user_id,
@@ -15,11 +13,13 @@ export default defineEventHandler(async (event) => {
   const urlAPI = config.public.urlAPI;
 
   try {
-    const response = await axios.get(urlAPI + event.path, {
-      params: params,
-      headers: headers 
+    const response = await $fetch(event.path, {
+      baseURL: urlAPI,
+      method: 'GET',
+      params: params, // 
+      headers: headers as HeadersInit,
     });
-    return response.data
+    return response
   } catch (err) {
     console.error('Error:', err);
     return null;

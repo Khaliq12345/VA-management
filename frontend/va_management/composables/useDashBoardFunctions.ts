@@ -1,115 +1,48 @@
-import { createClient } from '@supabase/supabase-js'
+import { useSimpleVariables } from '~/composables/useSimpleVariables'
+import { useSupabaseSub } from '~/composables/useSupabaseSub'
 
 export function useDashBoardFunctions() {
-    // Supabase
-    const config = useRuntimeConfig();
-    // Create a single supabase client for interacting with your database
-    const supabase = createClient(config.public.supabaseURL as any, config.public.supabaseKey as any)
-
-    //const { fetchVaInfo } = useFetchVaInfos();
-    // const { loggedInUser, updateLoggedInUserInfos } = useAuth()
-
-    // To Manage Page Loading
-    const loadingData = ref(false);
-
-    // To Show or Hide the Sidebar
-    const isMobileSidebarOpen = ref(false);
-
-    // List of Creators got on dashboard loaded - Users or the selected creator (active creator)
-    const users = ref([]);
-    const creators = ref([]);
-    const activeCreator = ref();
-
-    // When the VA pick a creator name to work with
-    const route = useRoute()
-    const router = useRouter()
-
-    // Configuration
-    // Nombre d'utilisateurs par page
-    const limit = 20
-    const airtableOffset: Ref<string | null> = ref(null)
-    const currentPage = computed(() => parseInt(route.query.page?.toString() ?? "1") || 1)
-    const offset = computed(() => (currentPage.value - 1) * limit)
-    const hasNextPage = ref(true)
-    // Supabase Handling
-    const subscriptionCallback = async (payload: any) => {
-        // Only the scraped_users table
-        if (payload.table != "scraped_users" || payload.eventType != "UPDATE") {
-            return;
-        }
-        // console.log('Change received !', payload)
-        // If the payload.new is on the actual listing
-        const userIndex = users.value.findIndex(
-            (u: any) => u.scraped_user.id === payload.new.id
-        );
-        if (userIndex === -1) {
-            return;
-        }
-        // console.log('1 Matching user payload !', payload.new)
-        // Update our listing element with it's new value
-        users.value[userIndex]['scraped_user'] = payload.new as never;
-        // Filter -- and return when the element must still in the listing
-        // console.log("last_action == null  : ", payload.new.last_action == null )
-        // console.log("more_than_30_days(payload.new.last_action)  : ", more_than_30_days(payload.new.last_action))
-        // No Last Action
-        if (payload.new.last_action == null) {
-            return;
-        }
-        // Last Action, but not yet 30 days
-        if (!more_than_30_days(payload.new.last_action)) {
-            // remove element
-            users.value.splice(userIndex, 1); 
-            return;
-        }
-        // So Here we have last_action and already 30 days since then -- Check in interaction_table
-        const { data, error } = await supabase
-            .from('interaction_table')
-            .select()
-            .eq('user_id', payload.new.user_id)
-            .eq('creator_username', activeCreator.value['Model Assigned'])
-        if (error) {
-            console.error("Error fetching interactions:", error);
-            return;
-        }
-        // console.log("interaction : ", data)
-        // 
-        if (data.length > 0) {
-            // remove element
-            users.value.splice(userIndex, 1); 
-        }
-    }
-    const subscribeSupabaseChannel = () => {
-        supabase
-            .channel('room1')
-            .on('postgres_changes', { event: '*', schema: '*' }, subscriptionCallback)
-            .subscribe();
-
-        // console.log("Subscription Complete !")
-    }
+    // Simple Variables
+    const {
+        loadingData,
+        isMobileSidebarOpen,
+        loggedInUser,
+        users,
+        creators,
+        activeCreator,
+        route,
+        router,
+        limit,
+        airtableOffset,
+        currentPage,
+        offset,
+        hasNextPage,
+    } = useSimpleVariables();
+    // SupaBase Subscription
+    const {subscribeSupabaseChannel} = useSupabaseSub();
+    // When VA click on any Creator name from the sidebar
     const handleMenuItemClick = async (item: any) => {
         activeCreator.value = item;
         router.push({
             path: route.path,
-            query: { creator: activeCreator.value['Model Assigned'], page: "1"}
+            query: { creator: activeCreator.value['Model Assigned'], page: "1" }
         })
         airtableOffset.value = null
         await loadUsers();
     };
-    
-
+    // On Mounted -- when the page load up
     onMounted(async () => {
         loadingData.value = true;
         try {
-            let  headers = {
+            let headers = {
                 'access_token': localStorage.getItem('access_token'),
                 'refresh_token': localStorage.getItem('refresh_token')
             }
-            // console.log("headers : ", headers)
             let response = await $fetch("/api/get-va-airtables", {
                 params: {
                     va_email: localStorage.getItem('email')
                 },
-               headers : headers as any
+                headers: headers as any
             }) as any;
             console.log('response status : ', response['status']);
             if (response['status'] == 401) {
@@ -122,11 +55,17 @@ export function useDashBoardFunctions() {
         } finally {
             loadingData.value = false;
         }
+        // Set Connected User Infos to show on Dashboard
+        loggedInUser.value = {
+            name: localStorage.getItem('name'),
+            email: localStorage.getItem('email'),
+            loginTime: localStorage.getItem('loginTime'),
+            shiftTimeFrom: localStorage.getItem('shiftTimeFrom'),
+            shiftTimeTo: localStorage.getItem('shiftTimeTo'),
+        }
     });
-    // 
-
-
-    // Navigation entre pages
+    // Navigation Between Pages
+    // Previous Page
     function goToPrevPage() {
         if (currentPage.value > 1) {
             router.push({
@@ -136,6 +75,7 @@ export function useDashBoardFunctions() {
             // loadUsers()
         }
     }
+    // Next Page
     function goToNextPage() {
         router.push({
             path: route.path,
@@ -143,9 +83,8 @@ export function useDashBoardFunctions() {
         })
         //   loadUsers()
     }
-    // Chargement des Users
+    // Load Users whether on a creator name picked or after changing page
     async function loadUsers() {
-        // console.log("Current page : ", currentPage.value)
         loadingData.value = true;
         try {
             let params = {
@@ -160,20 +99,14 @@ export function useDashBoardFunctions() {
                 'access_token': localStorage.getItem('access_token'),
                 'refresh_token': localStorage.getItem('refresh_token')
             }
-            // console.log(params)
-            // console.log(headers)
             const data = await $fetch('/api/get-scraped-users', {
                 headers: headers as any,
                 params: params,
-            })
-            // console.log("Got Users :", data)
-
+            }) as any
             users.value = data.results
             airtableOffset.value = data.airtable_offset
-
-            // Si on reçoit moins d'utilisateurs que le limit, c'est qu'on est à la dernière page
+            // We are on the last page when no more users are received 
             hasNextPage.value = users.value.length !== 0
-
             // supabase Subscription
             if (users.value.length > 0) {
                 subscribeSupabaseChannel()
@@ -185,16 +118,17 @@ export function useDashBoardFunctions() {
         }
         isMobileSidebarOpen.value = false;
     }
-    // Logout
-    function handleLogout(){
-       localStorage.removeItem('access_token')
-                localStorage.removeItem('refresh_token')
+    // Logout Function
+    function handleLogout() {
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
         router.push('/auth/sign-in')
     }
-
+    // Reload Users as soon as we change page
     watch(() => route.query.page, loadUsers)
-
+    // 
     return {
+        loggedInUser,
         currentPage,
         hasNextPage,
         goToPrevPage,

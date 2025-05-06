@@ -5,20 +5,8 @@ import PaginationControls from '../components/dashboard/PaginationControls.vue'
 import Loading from '../components/Loading.vue'
 import { useDashBoardFunctions } from '~/composables/useDashBoardFunctions'
 
-const loggedInUser = ref({}) as any;
-
-
-onMounted(async () => {
-  loggedInUser.value = {
-    name: localStorage.getItem('name'),
-    email: localStorage.getItem('email'),
-    loginTime: localStorage.getItem('loginTime'),
-    shiftTimeFrom: localStorage.getItem('shiftTimeFrom'),
-    shiftTimeTo: localStorage.getItem('shiftTimeTo'),
-  }
-})
-
 const {
+  loggedInUser,
   currentPage,
   hasNextPage,
   goToPrevPage,
@@ -31,7 +19,6 @@ const {
   handleMenuItemClick,
   handleLogout
 } = useDashBoardFunctions()
-
 </script>
 
 <template>
@@ -51,7 +38,6 @@ const {
             <UIcon name="i-heroicons-bars-3-bottom-left-20-solid" class="mr-3 text-xl" />
             <h3 class="ml-3 text-lg font-semibold text-center">Dashboard</h3>
           </UButton>
-
           <!-- LogOut -->
           <UButton color="secondary" @click="handleLogout" variant="ghost"
             icon="i-heroicons-arrow-left-end-on-rectangle" class="text-error-500 hover:bg-gray-100 cursor-pointer">
@@ -59,7 +45,6 @@ const {
           </UButton>
         </div>
       </header>
-
       <!-- Main Content -->
       <main class="flex-1 text-center overflow-y-auto p-4 sm:p-6 lg:p-8">
         <!-- User Infos -->
@@ -85,13 +70,16 @@ const {
           </ClientOnly>
         </div>
         <!-- Page Content -->
+        <!-- Loading -->
         <div v-if="loadingData" class="place-items-center place-content-center my-15">
           <Loading />
           <div class="container mx-auto p-4 text-center">
             <p>Loading Data ...</p>
           </div>
         </div>
+        <!-- When Loaded -->
         <div v-else>
+          <!-- Users Listing or Error Massage -->
           <DashboardContent :activeCreator="activeCreator" :users="users" :can-work="creators.length != 0" />
           <!-- Pagination -->
           <PaginationControls v-if="users.length != 0" :current-page="currentPage" :has-next-page="hasNextPage"
@@ -99,7 +87,6 @@ const {
         </div>
       </main>
     </div>
-    
     <!-- Mobile Drawer Sidebar -->
     <UDrawer direction="left" v-model:open="isMobileSidebarOpen" class="w-10/12 sm:w-6/12">
       <template #title>

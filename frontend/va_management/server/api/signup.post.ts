@@ -1,6 +1,3 @@
-import axios from "axios";
-import type { AxiosHeaders } from "axios";
-
 export default defineEventHandler(async (event) => {
   const query = getQuery(event); 
   const headers = getRequestHeaders(event);
@@ -13,12 +10,14 @@ export default defineEventHandler(async (event) => {
   };
 
   try {
-    const response = await axios.post(urlAPI + event.path, null, {
+    const response = await $fetch(event.path, {
+      baseURL: urlAPI,
+      method: 'POST',
       params: params, // 
-      headers: headers as AxiosHeaders,
+      headers: headers as HeadersInit,
     });
 
-    return response.data; // 
+    return response; // 
   } catch (err: any) {
     console.error("Erreur lors de l'appel à l'API distante :", err?.message);
     return createError({

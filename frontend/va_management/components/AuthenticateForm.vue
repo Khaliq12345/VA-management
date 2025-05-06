@@ -1,3 +1,45 @@
+<script setup lang="ts">
+const email: Ref<string> = ref('')
+const password: Ref<string> = ref('')
+const signUpApiKey: Ref<string> = ref('')
+const isLoading: Ref<boolean> = ref(false)
+const errorMsg: Ref<string | null> = ref('')
+// Check Submission
+const canSubmitForm = computed(() => !!email.value && !!password.value)
+const props = defineProps<{
+    mode: 'sign-in' | 'sign-up'
+    onSubmit: Function
+}>()
+// Submit the Form
+async function authSubmit() {
+    if (!email.value || !password.value) {
+        errorMsg.value = "Veuillez remplir tous les champs"
+        return
+    }
+    try {
+        isLoading.value = true
+        console.log('First', email.value, password.value, props.mode)
+        await props.onSubmit(email.value, password.value, signUpApiKey.value)
+    }
+    catch (error: any) {
+        if (error.response) {
+            const msg = error.response.data?.message || error.response.data?.error || error.response.data?.detail || ''
+            // Check Mode
+            if (msg.includes("Password should be at least 6 characters.")) {
+                errorMsg.value = "Le mot de passe doit contenir au moins 6 caractères"
+            }
+            else {
+                errorMsg.value = "Une erreur est survenue, verifier vos inputs."
+            }
+        }
+        console.error(`Une erreur s'est produite :${error}`)
+    }
+    finally {
+        isLoading.value = false
+    }
+}
+</script>
+
 <template>
     <div class="flex shadow-md content">
         <div v-if="mode === 'sign-up'"
@@ -35,55 +77,6 @@
         </div>
     </div>
 </template>
-
-
-<script setup lang="ts">
-
-const email: Ref<string> = ref('')
-const password: Ref<string> = ref('')
-const signUpApiKey: Ref<string> = ref('')
-const isLoading: Ref<boolean> = ref(false)
-const errorMsg: Ref<string | null> = ref('')
-
-// /* Vérification de soumission du formulaire */
-const canSubmitForm = computed(() => !!email.value && !!password.value)
-
-const props = defineProps<{
-    mode: 'sign-in' | 'sign-up'
-    onSubmit: Function
-}>()
-
-/* Fonction de soumission du formulaire */
-async function authSubmit() {
-    if (!email.value || !password.value) {
-        errorMsg.value = "Veuillez remplir tous les champs"
-        return
-    }
-    try {
-        isLoading.value = true
-        console.log('First', email.value, password.value, props.mode)
-        await props.onSubmit(email.value, password.value, signUpApiKey.value)
-    }
-    catch (error: any) {
-        if (error.response) {
-            const msg = error.response.data?.message || error.response.data?.error || error.response.data?.detail || ''
-            // Vérifier le mode aussi normalement
-            if (msg.includes("Password should be at least 6 characters.")) {
-                errorMsg.value = "Le mot de passe doit contenir au moins 6 caractères"
-            }
-            else {
-                errorMsg.value = "Une erreur est survenue, verifier vos inputs."
-            }
-        }
-        console.error(`Une erreur s'est produite :${error}`)
-    }
-    finally {
-        isLoading.value = false
-    }
-}
-
-</script>
-
 
 <style>
 .content {
@@ -128,7 +121,6 @@ input {
 }
 
 @media (max-width: 520px) {
-
     .content {
         display: block;
     }

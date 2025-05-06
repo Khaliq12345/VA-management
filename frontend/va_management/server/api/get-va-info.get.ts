@@ -1,5 +1,3 @@
-import axios, { AxiosHeaders } from "axios";
-
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const headers = getRequestHeaders(event);
@@ -8,17 +6,17 @@ export default defineEventHandler(async (event) => {
         email: query.email,
     }
 
-    // console.log(params)
-
     const config = useRuntimeConfig();
     const urlAPI = config.public.urlAPI;
 
     try {
-        const response = await axios.get(urlAPI + event.path, {
-          params: params,
-          headers: headers as AxiosHeaders
-        });
-        return response.data;
+        const response = await $fetch(event.path, {
+      baseURL: urlAPI,
+      method: 'GET',
+      params: params, // 
+      headers: headers as HeadersInit,
+    });
+        return response;
       } catch (err) {
         console.error('Error:', err);
         return null;
